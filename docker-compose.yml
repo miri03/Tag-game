@@ -1,0 +1,22 @@
+services:
+  tag_game:
+      image: tag_game
+      container_name: tag_game
+      build: ./tag-remote
+      ports:
+        - 8007:8005
+      volumes:
+      - ./tag-remote:/game
+      command: python manage.py runserver 0.0.0.0:8005
+
+volumes:
+  tag_game:
+    driver: local
+    driver_opts:
+        o: bind
+        type: none
+        device: ./backend/tag-remote/project/
+
+networks:
+  my_network:
+    driver: bridge

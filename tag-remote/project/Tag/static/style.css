@@ -1,0 +1,59 @@
+/* 
+@font-face {
+    font-family: 'Volax';
+    src: url('../assets/Valorax-lg25V.otf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+} */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    background: #1e1e2f !important;
+}
+
+.vv {
+    height: 100vh; /* Set to 100% of the viewport height */
+    width: 100vw; /* Set to 100% of the viewport width */
+    position: relative; /* Necessary for positioning the overlay */
+}
+
+#overlay {
+    position: absolute;
+    top: 0; /* Start from the top */
+    left: 0; /* Start from the left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #d6ddd5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 5vw;
+    visibility: hidden;
+    text-shadow: 2vw 0vw 8vw rgba(0, 0, 0, 0.8);    
+}
+
+.overlay-text {
+    font-family: 'Volax', sans-serif;
+    margin-bottom: 5vw;
+}
+
+.overlay-button {
+    padding: 10px 20px;
+    font-family: 'Volax', sans-serif;
+    font-size: 25px;
+    color: #DCDCDC;
+    background-color: #555;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    transition: background-color 0.3s ease;
+}
+
+.overlay-button:hover {
+    color: #849B84;
+    background-color: #DCDCDC;
+}
