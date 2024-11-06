@@ -1,5 +1,5 @@
 
-// import {start_game} from '../Tag/tag.js'
+import {start_game} from './tag.js'
 
 function connectWebSocket(url) {
     return new Promise((resolve, reject) => {
@@ -39,7 +39,7 @@ socket.addEventListener('message', function(event) {
     {
         console.log("here")
         // connect_game();
-        // start_game();
+        start_game();
     }
 })
 

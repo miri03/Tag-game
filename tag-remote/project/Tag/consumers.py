@@ -63,9 +63,9 @@ class MyConsumer(AsyncWebsocketConsumer):
 	async def disconnect(self, code):
 		pass
 
-    # async def receive(self, text_data):
-    #     text_data_json = json.loads(text_data)
-    #     action = text_data_json.get('action')
+	async def receive(self, text_data):
+		text_data_json = json.loads(text_data)
+		action = text_data_json.get('action')
     #     game_id = text_data_json.get('game_id')
 
     #     ###########################################################################################
@@ -75,8 +75,12 @@ class MyConsumer(AsyncWebsocketConsumer):
     #                 await self.send_all('start game')
 
     #     ###########################################################################################
-    #     if self.is_open and self.start_game and action == "window resize":
-    #         await resizeWindow(text_data_json, self, self.monitor)
+        # if self.is_open and self.start_game and action == "window resize":
+        #     await resizeWindow(text_data_json, self, self.monitor)
+
+		if action == "window resize":
+			pass
+		# 	await resizeWindow(text_data_json, self, self.monitor)
 
     #     ###########################################################################################
     #     if self.is_open and self.start_game and action == "players name":
@@ -119,42 +123,42 @@ class MyConsumer(AsyncWebsocketConsumer):
     #         'content': event['message']
     #     }))
 
-    # async def send_gameUpdate(self):
-    #     await self.send(text_data=json.dumps({
-    #         'action': 'game update',
-    #         'canvas_width': self.monitor.canvas_width,
-    #         'canvas_height': self.monitor.canvas_height,
+	# async def send_gameUpdate(self):
+	# 	await self.send(text_data=json.dumps({
+	# 		'action': 'game update',
+	# 		'canvas_width': self.monitor.canvas_width,
+	# 		'canvas_height': self.monitor.canvas_height,
 
-    #         'platform_widths': self.monitor.platform_widths,
-    #         'platform_heights': self.monitor.platform_heights,
-    #         'platform_xs': self.monitor.platform_xs,
-    #         'platform_ys': self.monitor.platform_ys,
-    #     }))
+	# 		'platform_widths': self.monitor.platform_widths,
+	# 		'platform_heights': self.monitor.platform_heights,
+	# 		'platform_xs': self.monitor.platform_xs,
+	# 		'platform_ys': self.monitor.platform_ys,
+	# 	}))
 
-    # async def send_playerUpdate(self):
-    #     await self.send(text_data=json.dumps({
-    #         'action': 'update player',
-    #         'player0_x': self.monitor.players[0].position['x'],
-    #         'player0_y': self.monitor.players[0].position['y'],
-    #         'upPressed0': self.monitor.players[0].key['upPressed'],
+	# async def send_playerUpdate(self):
+	# 	await self.send(text_data=json.dumps({
+	# 		'action': 'update player',
+	# 		'player0_x': self.monitor.players[0].position['x'],
+	# 		'player0_y': self.monitor.players[0].position['y'],
+	# 		'upPressed0': self.monitor.players[0].key['upPressed'],
 
-    #         'player1_x': self.monitor.players[1].position['x'],
-    #         'player1_y': self.monitor.players[1].position['y'],
-    #         'upPressed1': self.monitor.players[1].key['upPressed'],
+	# 		'player1_x': self.monitor.players[1].position['x'],
+	# 		'player1_y': self.monitor.players[1].position['y'],
+	# 		'upPressed1': self.monitor.players[1].key['upPressed'],
 
-    #         'player_width': self.monitor.players[0].width,
-    #         'player_height': self.monitor.players[0].height,
+	# 		'player_width': self.monitor.players[0].width,
+	# 		'player_height': self.monitor.players[0].height,
 
-    #         'player0_Tagger': self.monitor.players[0].tagger,
-    #         'player1_Tagger': self.monitor.players[1].tagger,
-    #         'GO': self.monitor.GO,
-    #         'time': self.monitor.game_time,
-    #         'winner': self.monitor.winner,
-    #         'winner_color': self.monitor.winner_color
-    #     }))
-    #     index = get_game_index(self.games, self.game_id)
-    #     if len(self.games[index][1]) < 2:
-    #         return
+	# 		'player0_Tagger': self.monitor.players[0].tagger,
+	# 		'player1_Tagger': self.monitor.players[1].tagger,
+	# 		'GO': self.monitor.GO,
+	# 		'time': self.monitor.game_time,
+	# 		'winner': self.monitor.winner,
+	# 		'winner_color': self.monitor.winner_color
+	# 	}))
+		# index = get_game_index(self.games, self.game_id)
+		# if len(self.games[index][1]) < 2:
+		#     return
         
     #     await self.send(text_data=json.dumps({
     #         'action': 'update key',
