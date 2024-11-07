@@ -9,6 +9,8 @@ class gameMonitor:
 
         self.gameconsumer = consumer
         self.players = []
+        self.players.append(Player(0, "player"))
+        self.players.append(Player(1, "player"))
 
         self.time_tag = time.time()
         self.GO = False
@@ -47,36 +49,37 @@ class gameMonitor:
         start_time = time.time()
         await asyncio.sleep(0.005)
 
-        while self.game_time:
+        # while self.game_time:
+        while True:
             # if not self.gameconsumer.is_open:
             #     break
         ################################################################################
-            from .consumers import get_game_index
-            index = get_game_index(self.gameconsumer.games, self.gameconsumer.game_id)
-            if len(self.gameconsumer.games[index][1]) < 2:
-                id = self.gameconsumer.id
-                self.winner = self.players[id].name
-                if id == 0:
-                    self.winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
-                else:
-                    self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
+            # from .consumers import get_game_index
+            # index = get_game_index(self.gameconsumer.games, self.gameconsumer.game_id)
+            # if len(self.gameconsumer.games[index][1]) < 2:
+            #     id = self.gameconsumer.id
+            #     self.winner = self.players[id].name
+            #     if id == 0:
+            #         self.winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
+            #     else:
+            #         self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
 
-                await self.gameconsumer.send_playerUpdate()
-                await asyncio.sleep(0.005)
-                await self.gameconsumer.close()
-                break
+            #     await self.gameconsumer.send_playerUpdate()
+            #     await asyncio.sleep(0.005)
+            #     await self.gameconsumer.close()
+            #     break
         ################################################################################
 
             try:
-                if self.game_time > 0:
-                    self.game_time = math.floor(99 - time.time() + start_time)
-                if self.game_time == 0:
-                    if not self.players[0].tagger:
-                        self.winner = self.players[0].name
-                        self.winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
-                    else:
-                        self.winner = self.players[1].name
-                        self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
+                # if self.game_time > 0:
+                #     self.game_time = math.floor(99 - time.time() + start_time)
+                # if self.game_time == 0:
+                #     if not self.players[0].tagger:
+                #         self.winner = self.players[0].name
+                #         self.winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
+                #     else:
+                #         self.winner = self.players[1].name
+                #         self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
                 collision = None
                 for self.player in self.players:
                     self.player.fall(self)
@@ -101,24 +104,26 @@ class gameMonitor:
                             self.player.position['x'] = self.platform.position['x'] + self.platform.width
                             collision = "right"
 
-                    if self.player.tagger:
-                        self.player.tagVel = self.player.vitesse['right'] / 3
-                    else:
-                        self.player.tagVel = 0
+                    # if self.player.tagger:
+                    #     self.player.tagVel = self.player.vitesse['right'] / 3
+                    # else:
+                    #     self.player.tagVel = 0
                     self.player.left_right(self, collision)
                 
-                if time.time() - self.time_tag > 3:
-                    self.GO = True
-                    self.Tag(self.players[0], self.players[1])
-                else:
-                    self.GO = False
+                # if time.time() - self.time_tag > 3:
+                #     self.GO = True
+                #     self.Tag(self.players[0], self.players[1])
+                # else:
+                #     self.GO = False
 
-                await self.gameconsumer.send_playerUpdate()
+                groupName, consumers = await self.gameconsumer.groupName()
+                await self.gameconsumer.channel_layer.group_send(groupName, {"type": "send_playerUpdate"})
+                # await self.gameconsumer.send_playerUpdate()
                 await asyncio.sleep(0.005)
 
             except Exception as e:
                 print(f"Error game loop: {e}")
-                self.gameconsumer.is_open = False
+                # self.gameconsumer.is_open = False
                 break
 
     def checkCollision(self, id):
@@ -329,6 +334,6 @@ async def resizeWindow(text_data_json, self_cons, game_monitor):
     game_monitor.platform_xs = [platform.position['x'] for platform in game_monitor.platforms]
     game_monitor.platform_ys = [platform.position['y'] for platform in game_monitor.platforms]
 
-    if self_cons.is_open:
-        await self_cons.send_playerUpdate()
-        await self_cons.send_gameUpdate()
+    # if self_cons.is_open:
+    # await self_cons.send_playerUpdate()
+    await self_cons.send_gameUpdate()

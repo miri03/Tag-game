@@ -19,38 +19,17 @@ class MyConsumer(AsyncWebsocketConsumer):
 		players_c.append(self)
 		await self.starting()
 
-    # async def connect(self):
-    #     self.is_open = True
-        
-    #     self.start_game = False
-    #     self.monitor = gameMonitor(self)
-    #     self.room_group_name = "game_room"
-    #     self.id = len(self.players_c)
-    #     self.enemy_id = 0 if self.id == 1 else 1
-    #     await self.channel_layer.group_add(
-    #         self.room_group_name,
-    #         self.channel_name
-    #     )
-
-    #     await self.accept()
-
-    #     if len(self.players_c) < 2:
-    #         self.players_c.append(self)
-
-    #     if len(self.players_c) == 2:
-    #         self.players_c[0].monitor.players = [Player(0, "player"), Player(1, "enemy")]
-    #         self.players_c[1].monitor.players = [Player(0, "enemy"), Player(1, "player")]
-
-
 	async def starting(self):
 		if len(players_c) == 2:
-			firstPlayer = players_c.pop(0)
-			secondPlayer = players_c.pop(0)
+			firstConsumer = players_c.pop(0)
+			secondConsumer = players_c.pop(0)
+			# self.group_name = str(uuid.uuid4()) ###this
 			group_name = str(uuid.uuid4()) ###this
-			await self.channel_layer.group_add(group_name, firstPlayer.channel_name)
-			await self.channel_layer.group_add(group_name, secondPlayer.channel_name)
+			await self.channel_layer.group_add(group_name, firstConsumer.channel_name)
+			await self.channel_layer.group_add(group_name, secondConsumer.channel_name)
 			await self.channel_layer.group_send(group_name, {"type": "send_start", "message": "start game"})
 			games[group_name] = gameMonitor(self)
+
 			asyncio.create_task(games[group_name].gameLoop())
 
 	async def send_start(self, event):
@@ -59,13 +38,25 @@ class MyConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({
 			"content": message
 		}))
- 
+
+	async def groupName(self):
+		# print(dir(self.channel_layer))
+		for group, channel in self.channel_layer.groups.items():
+			# print(type(channel))
+			consumers = list(map(lambda item: item, channel))
+			for consumer, date in channel.items():
+				if consumer == self.channel_name:
+					return group, consumers
+
 	async def disconnect(self, code):
 		pass
 
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
 		action = text_data_json.get('action')
+		group_name, consumers = await self.groupName()
+		# print("here", consumers)
+
     #     game_id = text_data_json.get('game_id')
 
     #     ###########################################################################################
@@ -79,9 +70,8 @@ class MyConsumer(AsyncWebsocketConsumer):
         #     await resizeWindow(text_data_json, self, self.monitor)
 
 		if action == "window resize":
-			pass
-		# 	await resizeWindow(text_data_json, self, self.monitor)
-
+			await resizeWindow(text_data_json, self, games[group_name])
+ 
     #     ###########################################################################################
     #     if self.is_open and self.start_game and action == "players name":
     #         self.monitor.players[self.id].name = text_data_json.get("p1")
@@ -89,7 +79,16 @@ class MyConsumer(AsyncWebsocketConsumer):
     #         print("status", self.monitor.players[self.id].status, self.monitor.players[self.id].name)
 
     #     ###########################################################################################
-    #     if self.is_open and self.start_game and action == "key update":
+		if action == "key update":
+			if consumers[0] == self.channel_name:
+				games[group_name].players[0].key['right'] = text_data_json.get('P0_rightPressed')
+				games[group_name].players[0].key['left'] = text_data_json.get('P0_leftPressed')
+				# games[group_name].players[0].key['right'] = text_data_json.get('P0_rightPressed')
+			elif consumers[1] == self.channel_name:
+				games[group_name].players[1].key['right'] = text_data_json.get('P0_rightPressed')
+				games[group_name].players[1].key['left'] = text_data_json.get('P0_leftPressed')
+				# games[group_name].players[1].key['right'] = text_data_json.get('P0_rightPressed')
+		
     #         index = get_game_index(self.games, self.game_id)
     #         if len(self.games[index][1]) < 2:
     #             return
@@ -123,51 +122,73 @@ class MyConsumer(AsyncWebsocketConsumer):
     #         'content': event['message']
     #     }))
 
-	# async def send_gameUpdate(self):
-	# 	await self.send(text_data=json.dumps({
-	# 		'action': 'game update',
-	# 		'canvas_width': self.monitor.canvas_width,
-	# 		'canvas_height': self.monitor.canvas_height,
+	async def send_gameUpdate(self):
+		group_name, consumers = await self.groupName()
 
-	# 		'platform_widths': self.monitor.platform_widths,
-	# 		'platform_heights': self.monitor.platform_heights,
-	# 		'platform_xs': self.monitor.platform_xs,
-	# 		'platform_ys': self.monitor.platform_ys,
-	# 	}))
+		await self.send(text_data=json.dumps({
+			'action': 'game update',
+			'canvas_width': games[group_name].canvas_width,
+			'canvas_height': games[group_name].canvas_height,
 
-	# async def send_playerUpdate(self):
-	# 	await self.send(text_data=json.dumps({
-	# 		'action': 'update player',
-	# 		'player0_x': self.monitor.players[0].position['x'],
-	# 		'player0_y': self.monitor.players[0].position['y'],
-	# 		'upPressed0': self.monitor.players[0].key['upPressed'],
+			'platform_widths': games[group_name].platform_widths,
+			'platform_heights': games[group_name].platform_heights,
+			'platform_xs': games[group_name].platform_xs,
+			'platform_ys': games[group_name].platform_ys,
+			
+			'player0_x': games[group_name].players[0].position['x'],
+			'player0_y': games[group_name].players[0].position['y'],
+			'upPressed0': games[group_name].players[0].key['upPressed'],
 
-	# 		'player1_x': self.monitor.players[1].position['x'],
-	# 		'player1_y': self.monitor.players[1].position['y'],
-	# 		'upPressed1': self.monitor.players[1].key['upPressed'],
+			'player1_x': games[group_name].players[1].position['x'],
+			'player1_y': games[group_name].players[1].position['y'],
+			'upPressed1': games[group_name].players[1].key['upPressed'],
 
-	# 		'player_width': self.monitor.players[0].width,
-	# 		'player_height': self.monitor.players[0].height,
+			'player_width': games[group_name].players[0].width,
+			'player_height': games[group_name].players[0].height,
 
-	# 		'player0_Tagger': self.monitor.players[0].tagger,
-	# 		'player1_Tagger': self.monitor.players[1].tagger,
-	# 		'GO': self.monitor.GO,
-	# 		'time': self.monitor.game_time,
-	# 		'winner': self.monitor.winner,
-	# 		'winner_color': self.monitor.winner_color
-	# 	}))
+			'player0_Tagger': games[group_name].players[0].tagger,
+			'player1_Tagger': games[group_name].players[1].tagger,
+			'GO': games[group_name].GO,
+			'time': games[group_name].game_time,
+			'winner': games[group_name].winner,
+			'winner_color': games[group_name].winner_color
+		}))
+
+	async def send_playerUpdate(self, event):
+		group_name, consumers = await self.groupName()
+
+		await self.send(text_data=json.dumps({
+			'action': 'update player',
+			'player0_x': games[group_name].players[0].position['x'],
+			'player0_y': games[group_name].players[0].position['y'],
+			'upPressed0': games[group_name].players[0].key['upPressed'],
+
+			'player1_x': games[group_name].players[1].position['x'],
+			'player1_y': games[group_name].players[1].position['y'],
+			'upPressed1': games[group_name].players[1].key['upPressed'],
+
+			'player_width': games[group_name].players[0].width,
+			'player_height': games[group_name].players[0].height,
+
+			'player0_Tagger': games[group_name].players[0].tagger,
+			'player1_Tagger': games[group_name].players[1].tagger,
+			'GO': games[group_name].GO,
+			'time': games[group_name].game_time,
+			'winner': games[group_name].winner,
+			'winner_color': games[group_name].winner_color
+		}))
 		# index = get_game_index(self.games, self.game_id)
 		# if len(self.games[index][1]) < 2:
 		#     return
         
-    #     await self.send(text_data=json.dumps({
-    #         'action': 'update key',
-    #         'leftPressed0': self.games[index][1][self.id].monitor.players[0].key['left'],
-    #         'rightPressed0': self.games[index][1][self.id].monitor.players[0].key['right'],
+        # await self.send(text_data=json.dumps({
+        #     'action': 'update key',
+        #     'leftPressed0': self.games[index][1][self.id].monitor.players[0].key['left'],
+        #     'rightPressed0': self.games[index][1][self.id].monitor.players[0].key['right'],
             
-    #         'leftPressed1': self.games[index][1][self.id].monitor.players[1].key['left'],
-    #         'rightPressed1': self.games[index][1][self.id].monitor.players[1].key['right'],        
-    #     }))
+        #     'leftPressed1': self.games[index][1][self.id].monitor.players[1].key['left'],
+        #     'rightPressed1': self.games[index][1][self.id].monitor.players[1].key['right'],        
+        # }))
 
 	# async def disconnect(self, code):
 		# self.is_open = False

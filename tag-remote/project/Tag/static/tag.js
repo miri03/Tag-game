@@ -333,6 +333,24 @@ async function start_game()
                 platforms[i].position.x = platformXs[i]
                 platforms[i].position.y = platformYs[i]
             }
+            players[0].position.x = socket_data.player0_x
+            players[0].position.y = socket_data.player0_y
+
+            players[1].position.x = socket_data.player1_x
+            players[1].position.y = socket_data.player1_y
+
+            players[0].width = socket_data.player_width
+            players[1].width = socket_data.player_width
+
+            players[0].height = socket_data.player_height
+            players[1].height = socket_data.player_height
+
+            players[0].tagger = socket_data.player0_Tagger
+            players[1].tagger = socket_data.player1_Tagger
+            GO = socket_data.GO
+            time = socket_data.time
+            winner = socket_data.winner
+            winner_color = socket_data.winner_color
         }
 
         if (socket_data.action === "update player")
