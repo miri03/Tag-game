@@ -1,10 +1,10 @@
-/* 
+
 @font-face {
     font-family: 'Volax';
-    src: url('../assets/Valorax-lg25V.otf') format('opentype');
+    src: url('/static/assets/Valorax-lg25V.otf') format('opentype');
     font-weight: bold;
     font-style: italic;
-} */
+}
 
 html, body {
     height: 100%;

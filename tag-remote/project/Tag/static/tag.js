@@ -1,7 +1,6 @@
 import { socket } from './socket.js'
 import {imageR1, imageL1, imageIR1, imageIL1, imageR2, imageL2, imageIR2, imageIL2, arrow, go_arrow, numbers, background, platform} from './image_src.js';
-// import {tag_game_info, setTagGameInfo} from '../ta/script.js'
-// import {get_localstorage, check_access_token} from '../../auth.js'
+
 const host = "127.0.0.1"
 
 const tag_game_info = {
@@ -9,51 +8,25 @@ const tag_game_info = {
     player2name: "halima",
 }
 
-// var api = `https://${host}:9004/api/`
-// var api_tag = `https://${host}:9007/api/tag-gamedb/`
-
-// export async function fetchUserName() {
-//     await check_access_token()
-//       try {
-//         const userResponse = await fetch(api + 'auth/get-user/', {
-//           method: 'GET',
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': 'Bearer ' + get_localstorage('token'),
-//             'Session-ID': get_localstorage('session_id')
-//           },
-//           credentials: 'include',
-//         });
-        
-//         if (userResponse.status === 404) {
-//             logoutf();
-//             window.location.hash = '/login';
-//           }
-
-//         if (!userResponse.ok)
-//           throw new Error(`Status: ${response.status}, Message: ${jsonData.message || 'Unknown error'}`);
-
-//         let data_user = await userResponse.json()
-
-//         let username = data_user.user_data.username
-//         return (username);
-//       }
-//       catch(error){
-//         console.error('There was a problem with the fetch operation:', error);
-//       }
-// }
-
 async function start_game()
 {
 
+    
     class Platform{
-    
-        width = 0
-        height = 20
-    
-        position= {
-            x: 0,
-            y: 0,
+        constructor({x, y, w})
+        {
+            this.width = w
+            this.height = 20
+        
+            this.position= {
+                x: x,
+                y: y, 
+            }
+            this.dimensionPercentageX = w * 100 / 1697
+            this.dimensionPercentageY = 2.094
+
+            this.pX = x * 100 / 1697
+            this.pY = y * 100 / 955
         }
     
         draw() {
@@ -84,10 +57,14 @@ async function start_game()
             
             this.width = 40
             this.height = 40
-    
+            
+            this.dimensionPercenatge = 4.188
+
             this.position= {
                 x: 0,
                 y: 0,
+                pX: 0,
+                pY: 0
             }
     
             this.keyStatus={
@@ -103,42 +80,6 @@ async function start_game()
             load_draw(this.image, this.position.x ,this.position.y, this.width, this.height)
         }
     }
-
-    // async function game_score(winner)
-    // {
-    //     await check_access_token()
-    //     let winner_id
-    //     if (winner === tag_game_info.player1name)
-    //         winner_id =  tag_game_info.player1_id
-    //     else
-    //         winner_id =  tag_game_info.player2_id
-
-    //     const data = {
-    //         game_id: tag_game_info.game_id,
-    //         winner_name: winner,
-    //         winner_id: winner_id
-    //     }
-    //     try{
-    //         const response = await fetch(api_tag + 'add-game-score/', {
-    //             method: 'POST',
-    //             headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': 'Bearer ' + get_localstorage('token'),
-    //             'Session-ID': get_localstorage('session_id')
-    //             },
-    //             credentials: 'include',
-    //             body: JSON.stringify(data)
-    //         });
-    //         const jsonData = await response.json()
-    //         if (!response.ok) {
-    //           console.error(`Status: ${response.status}, Message: ${jsonData.message || 'Unknown error'}`)
-    //         }
-    //     }
-    //     catch(error){
-    //         console.error('Request failed', error)
-    //     }
-        
-    // }
 
     function draw_timer(time, player)
     {
@@ -194,7 +135,26 @@ async function start_game()
 
     const canvas = document.getElementById('canva');
     const c = canvas.getContext("2d");
-    const platforms = Array.from({ length: 15 }, () => new Platform())
+    const platforms = [
+        new Platform({x:302, y:288, w:153}),
+        new Platform({x:1000, y:280, w:138}),
+        new Platform({x:1470, y:340, w:133}),
+        new Platform({x:1245, y:400, w:135}),
+        new Platform({x:0, y:472, w:359}),
+        new Platform({x:636, y:480, w:180}),
+        new Platform({x:1420, y:570, w:100}),
+
+        new Platform({x:545, y:700, w:351}),
+        new Platform({x:1070, y:720, w:245}),
+        new Platform({x:0, y:800, w:300}),
+
+        new Platform({x:0, y:935, w:375}),
+        new Platform({x:375, y:935, w:375}),
+        new Platform({x:750, y:935, w:375}),
+        new Platform({x:1125, y:935, w:375}),
+        new Platform({x:1500, y:935, w:377}),
+    ]
+
     const players = [new Player({imgR:imageR1, imgL:imageL1, imgIR:imageIR1, imgIL:imageIL1, ply_name:tag_game_info.player1name}), new Player({imgR:imageR2, imgL:imageL2, imgIR:imageIR2, imgIL:imageIL2, ply_name:tag_game_info.player2name})]
     
     let GO = false
@@ -203,7 +163,6 @@ async function start_game()
     let stop_animation = false
 
     canvas.width = 0;
-    canvas.height = 0;
     if (socket.readyState === WebSocket.OPEN)
     {
         let p1_name 
@@ -229,6 +188,19 @@ async function start_game()
     }
 
     resizeWindow()
+
+    if (socket.readyState === WebSocket.OPEN)
+    {
+        let p0_x = (players[0].position.x / canvas.width) * 1697
+        let p1_x = (players[1].position.x / canvas.width) * 1697
+
+        socket.send(JSON.stringify({
+            'action': 'init players position',
+            'player0_x': p0_x,
+            'player1_x': p1_x,
+        }))
+    }
+
     animation()
 
     function delay(ms) {
@@ -287,13 +259,13 @@ async function start_game()
             }
         })
         rain();
-        // if (!winner)
-            // draw_timer(time, players)
-        if (time === 0 && socket.readyState === WebSocket.OPEN)
-        {
-            socket.close()
-            time = 1
-        }
+        if (!winner)
+            draw_timer(time, players)
+        // if (time === 0 && socket.readyState === WebSocket.OPEN)
+        // {
+        //     socket.close()
+        //     time = 1
+        // }
     }
 
     function load_draw(image, x, y, width, height)
@@ -314,52 +286,34 @@ async function start_game()
         }
     }
 
+    function scale(data)
+    {
+        players.forEach(player=>{
+            player.height = player.dimensionPercenatge * canvas.height / 100
+            player.width = player.height
+        })
+
+        // player position
+        players[0].position.pX = data.player0_x * 100 / 1697
+        players[0].position.pY = data.player0_y * 100 / 955
+        
+        players[0].position.x = players[0].position.pX * canvas.width / 100
+        players[0].position.y = players[0].position.pY * canvas.height / 100
+
+        players[1].position.pX = data.player1_x * 100 / 1697
+        players[1].position.pY = data.player1_y * 100 / 955
+        
+        players[1].position.x = players[1].position.pX * canvas.width / 100
+        players[1].position.y = players[1].position.pY * canvas.height / 100
+    }
+
     function receive_message(event)
     {
         let socket_data = JSON.parse(event.data)
-        if (socket_data.action === "game update")
-        {
-            canvas.height = socket_data.canvas_height
-            canvas.width = socket_data.canvas_width
-            
-            let platformWidths = socket_data.platform_widths
-            let platformHeights = socket_data.platform_heights
-            let platformXs = socket_data.platform_xs
-            let platformYs = socket_data.platform_ys
-
-            for (let i = 0; i < platformWidths.length; i++)
-            {
-                platforms[i].width = platformWidths[i]
-                platforms[i].height = platformHeights[i]
-                platforms[i].position.x = platformXs[i]
-                platforms[i].position.y = platformYs[i]
-            }
-            players[0].position.x = socket_data.player0_x
-            players[0].position.y = socket_data.player0_y
-
-            players[1].position.x = socket_data.player1_x
-            players[1].position.y = socket_data.player1_y
-
-            players[0].width = socket_data.player_width
-            players[1].width = socket_data.player_width
-
-            players[0].height = socket_data.player_height
-            players[1].height = socket_data.player_height
-        }
 
         if (socket_data.action === "update player")
         {
-            players[0].position.x = socket_data.player0_x
-            players[0].position.y = socket_data.player0_y
-
-            players[1].position.x = socket_data.player1_x
-            players[1].position.y = socket_data.player1_y
-
-            players[0].width = socket_data.player_width
-            players[1].width = socket_data.player_width
-
-            players[0].height = socket_data.player_height
-            players[1].height = socket_data.player_height
+            scale(socket_data)
 
             players[0].tagger = socket_data.player0_Tagger
             players[1].tagger = socket_data.player1_Tagger
@@ -367,8 +321,6 @@ async function start_game()
             time = socket_data.time
             winner = socket_data.winner
             winner_color = socket_data.winner_color
-
-            resolution()
         }
 
         if (socket_data.action === "update key")
@@ -399,43 +351,49 @@ async function start_game()
         }
     }
 
-    function resolution()
-    {
-        players.forEach(player=>{
-            let pX = player.position.x * 100 / 1697
-            let pY = player.position.y * 100 / 955
-            
-            player.position.x = pX * canvas.width / 100
-            player.position.y = pY * canvas.height / 100
-
-            player.height = 4.188 * canvas.height / 100
-            player.width = player.height
-            console.log(player.height, player.width)
-        })
-    }
-
     function resizeWindow()
     {
-        console.log("resize window")
-        if (socket.readyState === WebSocket.OPEN)
+        if (window.innerHeight < 10)
+            return
+        let initW = canvas.width
+        let initH = canvas.height
+        canvas.height = window.innerHeight - 6
+        let Width = (16 * canvas.height) / 9
+        if (Width < window.innerWidth - 6)
+            canvas.width = Width
+        else
         {
-            socket.send(JSON.stringify({
-                'action': 'window resize',
-                'window_innerHeight': window.innerHeight,
-                'window_innerWidth': window.innerWidth,
-                'canvas_height': canvas.height,
-                'canvas_width': canvas.width,
-
-                'player0_positionX': players[0].position.x,
-                'player0_positionY': players[0].position.y,
-
-                'player1_positionX': players[1].position.x,
-                'player1_positionY': players[1].position.y,
-
-                'player0_name': players[0].name,
-                'player1_name': players[1].name
-            }))
+            canvas.width = window.innerWidth - 6
+            canvas.height = (9 * (canvas.width - 6)) / 16
         }
+
+        players.forEach(player=>{
+            player.height = player.dimensionPercenatge * canvas.height / 100
+            player.width = player.height
+
+            // player position
+            if (initW)
+            {
+                player.position.pX = player.position.x * 100 / initW
+                player.position.pY = player.position.y * 100 / initH
+                
+                player.position.x = player.position.pX * canvas.width / 100
+                player.position.y = player.position.pY * canvas.height / 100
+            }
+        })
+
+        if (initW === 0)
+        {
+            players[0].position.x = canvas.width/4
+            players[1].position.x = 3*canvas.width/4
+        }
+
+        platforms.forEach(platform=>{
+            platform.width = platform.dimensionPercentageX * canvas.width / 100
+            platform.height = platform.dimensionPercentageY * canvas.height / 100
+            platform.position.x = platform.pX * canvas.width / 100
+            platform.position.y = platform.pY * canvas.height / 100
+        })
     }
 
     function keydown(event)
