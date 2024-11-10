@@ -122,37 +122,9 @@ class MyConsumer(AsyncWebsocketConsumer):
     #         'content': event['message']
     #     }))
 
-	async def send_gameUpdate(self):
+	async def send_gameUpdate(self, data):
 		group_name, consumers = await self.groupName()
-
-		await self.send(text_data=json.dumps({
-			'action': 'game update',
-			'canvas_width': games[group_name].canvas_width,
-			'canvas_height': games[group_name].canvas_height,
-
-			'platform_widths': games[group_name].platform_widths,
-			'platform_heights': games[group_name].platform_heights,
-			'platform_xs': games[group_name].platform_xs,
-			'platform_ys': games[group_name].platform_ys,
-			
-			'player0_x': games[group_name].players[0].position['x'],
-			'player0_y': games[group_name].players[0].position['y'],
-			'upPressed0': games[group_name].players[0].key['upPressed'],
-
-			'player1_x': games[group_name].players[1].position['x'],
-			'player1_y': games[group_name].players[1].position['y'],
-			'upPressed1': games[group_name].players[1].key['upPressed'],
-
-			'player_width': games[group_name].players[0].width,
-			'player_height': games[group_name].players[0].height,
-
-			'player0_Tagger': games[group_name].players[0].tagger,
-			'player1_Tagger': games[group_name].players[1].tagger,
-			'GO': games[group_name].GO,
-			'time': games[group_name].game_time,
-			'winner': games[group_name].winner,
-			'winner_color': games[group_name].winner_color
-		}))
+		await self.send(text_data=json.dumps(data))
 
 	async def send_playerUpdate(self, event):
 		group_name, consumers = await self.groupName()

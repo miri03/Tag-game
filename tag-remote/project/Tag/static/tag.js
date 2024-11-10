@@ -203,6 +203,7 @@ async function start_game()
     let stop_animation = false
 
     canvas.width = 0;
+    canvas.height = 0;
     if (socket.readyState === WebSocket.OPEN)
     {
         let p1_name 
@@ -286,8 +287,8 @@ async function start_game()
             }
         })
         rain();
-        if (!winner)
-            draw_timer(time, players)
+        // if (!winner)
+            // draw_timer(time, players)
         if (time === 0 && socket.readyState === WebSocket.OPEN)
         {
             socket.close()
@@ -344,13 +345,6 @@ async function start_game()
 
             players[0].height = socket_data.player_height
             players[1].height = socket_data.player_height
-
-            players[0].tagger = socket_data.player0_Tagger
-            players[1].tagger = socket_data.player1_Tagger
-            GO = socket_data.GO
-            time = socket_data.time
-            winner = socket_data.winner
-            winner_color = socket_data.winner_color
         }
 
         if (socket_data.action === "update player")
@@ -373,6 +367,8 @@ async function start_game()
             time = socket_data.time
             winner = socket_data.winner
             winner_color = socket_data.winner_color
+
+            resolution()
         }
 
         if (socket_data.action === "update key")
@@ -403,14 +399,39 @@ async function start_game()
         }
     }
 
+    function resolution()
+    {
+        players.forEach(player=>{
+            let pX = player.position.x * 100 / 1697
+            let pY = player.position.y * 100 / 955
+            
+            player.position.x = pX * canvas.width / 100
+            player.position.y = pY * canvas.height / 100
+
+            player.height = 4.188 * canvas.height / 100
+            player.width = player.height
+            console.log(player.height, player.width)
+        })
+    }
+
     function resizeWindow()
     {
+        console.log("resize window")
         if (socket.readyState === WebSocket.OPEN)
         {
             socket.send(JSON.stringify({
                 'action': 'window resize',
                 'window_innerHeight': window.innerHeight,
                 'window_innerWidth': window.innerWidth,
+                'canvas_height': canvas.height,
+                'canvas_width': canvas.width,
+
+                'player0_positionX': players[0].position.x,
+                'player0_positionY': players[0].position.y,
+
+                'player1_positionX': players[1].position.x,
+                'player1_positionY': players[1].position.y,
+
                 'player0_name': players[0].name,
                 'player1_name': players[1].name
             }))

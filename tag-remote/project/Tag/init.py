@@ -5,7 +5,8 @@ import math
 
 class gameMonitor:
     def __init__(self, consumer):
-        self.canvas_height = 0
+        self.canvas_width = 1697
+        self.canvas_height = 955
 
         self.gameconsumer = consumer
         self.players = []
@@ -38,7 +39,6 @@ class gameMonitor:
             Platform(1500, 935, 377),
         ]
         
-        self.canvas_width = 0
         self.platform_widths = None
         self.platform_heights = None
         self.platform_xs = None
@@ -173,24 +173,29 @@ class Player:
         else:
             self.tagger = False
 
-        self.width = 0
-        self.height = 0
+        self.width = 39.995
+        self.height = 39.995
         self.dimensionPercenatge = 4.188
 
-        self.position = {
-            'x': 0,
-            'y': 0,
-            'pX': 0,
-            'pY': 0
-        }
+        if self.id == 0:
+            self.position = {
+                'x': 424.25,
+                'y': 0
+            }
+        else:
+            self.position = {
+                'x': 1272.75,
+                'y': 0
+            }
+
         self.velocity = {
             'x': 0,
             'y': 0
         }
         self.vitesse={
-            'right': 0,
-            'left': 0,
-            'up': 0,
+            'right': 2,
+            'left': -2,
+            'up': -7,
         }
 
         self.tagVel = 0
@@ -202,10 +207,10 @@ class Player:
             'upReleas': True,
         }
 
-    def updatePlayer(self, canvas_height, canvas_width, initW, initH):
+    def updatePlayer(self, canvas_height, canvas_width, initW, initH, position):
 
-        self.height = self.dimensionPercenatge * canvas_height / 100
-        self.width = self.height
+        height = self.dimensionPercenatge * canvas_height / 100
+        width = height
 
         # vitesse of the movement
         self.vitesse['left'] = canvas_width * -2 / 1697
@@ -219,19 +224,20 @@ class Player:
         # player position
         if initW:
 
-            self.position['pX'] = self.position['x'] * 100 / initW
-            self.position['pY'] = self.position['y'] * 100 / initH
+            pX = position['x'] * 100 / initW
+            pY = position['y'] * 100 / initH
             
-            self.position['x'] = self.position['pX'] * canvas_width / 100
-            self.position['y'] = self.position['pY'] * canvas_height / 100
+            position['x'] = pX * canvas_width / 100
+            position['y'] = pY * canvas_height / 100
 
         else:
             if self.id == 0:
-                self.position['x'] = canvas_width/4
+                position['x'] = canvas_width/4
             else:
-                self.position['x'] = 3*canvas_width/4
+                position['x'] = 3*canvas_width/4
 
         self.gravity = canvas_height * 0.1 / 955
+        return height, position
 
     def fall(self, game_monitor):
 
@@ -299,7 +305,7 @@ class Player:
             or (self.position['y'] < platform.position['y'] and self.position['y'] + self.height > platform.position['y'] + platform.height)):
                 return 1
         return 0
-           
+
 async def resizeWindow(text_data_json, self_cons, game_monitor):
 
     window_innerHeight = text_data_json.get('window_innerHeight')
@@ -307,33 +313,59 @@ async def resizeWindow(text_data_json, self_cons, game_monitor):
 
     if window_innerHeight < 10:
         return
-    init = game_monitor.canvas_width
-    test = game_monitor.canvas_height
-    game_monitor.canvas_height = window_innerHeight - 6
+    init = text_data_json.get('canvas_width')
+    test = text_data_json.get('canvas_height')
+    canvas_height = window_innerHeight - 6
 
-    Width = (16 * game_monitor.canvas_height) / 9
+    Width = (16 * canvas_height) / 9
     if (Width < window_innerWidth - 6):
-        game_monitor.canvas_width = Width
+        canvas_width = Width
     else:
-        game_monitor.canvas_width = window_innerWidth - 6
-        game_monitor.canvas_height = (9 * (game_monitor.canvas_width - 6)) / 16
+        canvas_width = window_innerWidth - 6
+        canvas_height = (9 * (canvas_width - 6)) / 16
 
-    for player in game_monitor.players:
-        player.updatePlayer(game_monitor.canvas_height, game_monitor.canvas_width, init, test)
+    # for player in game_monitor.players:
+    position1 ={
+        'x': text_data_json.get('player0_positionX'),
+        'y': text_data_json.get('player0_positionY')
+    }
 
-    
+    position2 ={
+        'x': text_data_json.get('player1_positionX'),
+        'y': text_data_json.get('player1_positionY')
+    }
+    heightP, position1 = game_monitor.players[0].updatePlayer(canvas_height, canvas_width, init, test, position1)
+    heightP, position2 = game_monitor.players[1].updatePlayer(canvas_height, canvas_width, init, test, position2)
 
     for platform in game_monitor.platforms:
-        platform.width = platform.dimensionPercentageX * game_monitor.canvas_width / 100
-        platform.height = platform.dimensionPercentageY * game_monitor.canvas_height / 100
-        platform.position['x'] = platform.pX * game_monitor.canvas_width / 100
-        platform.position['y'] = platform.pY * game_monitor.canvas_height / 100
+        platform.width = platform.dimensionPercentageX * canvas_width / 100
+        platform.height = platform.dimensionPercentageY * canvas_height / 100
+        platform.position['x'] = platform.pX * canvas_width / 100
+        platform.position['y'] = platform.pY * canvas_height / 100
 
     game_monitor.platform_widths = [platform.width for platform in game_monitor.platforms]
     game_monitor.platform_heights = [platform.height for platform in game_monitor.platforms]
     game_monitor.platform_xs = [platform.position['x'] for platform in game_monitor.platforms]
     game_monitor.platform_ys = [platform.position['y'] for platform in game_monitor.platforms]
 
-    # if self_cons.is_open:
-    # await self_cons.send_playerUpdate()
-    await self_cons.send_gameUpdate()
+    data = {
+        'action': 'game update',
+
+        'canvas_width': canvas_width,
+        'canvas_height': canvas_height,
+
+        'platform_widths': game_monitor.platform_widths,
+        'platform_heights': game_monitor.platform_heights,
+        'platform_xs': game_monitor.platform_xs,
+        'platform_ys': game_monitor.platform_ys,
+
+        'player_width': heightP,
+        'player_height': heightP,
+
+        'player0_x': position1['x'],
+        'player0_y': position1['y'],
+        'player1_x': position2['x'],
+        'player1_y': position2['y']
+    }
+
+    await self_cons.send_gameUpdate(data)
