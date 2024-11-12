@@ -49,37 +49,21 @@ class gameMonitor:
         start_time = time.time()
         await asyncio.sleep(0.005)
 
-        # while self.game_time:
-        while True:
-            # if not self.gameconsumer.is_open:
-            #     break
-        ################################################################################
-            # from .consumers import get_game_index
-            # index = get_game_index(self.gameconsumer.games, self.gameconsumer.game_id)
-            # if len(self.gameconsumer.games[index][1]) < 2:
-            #     id = self.gameconsumer.id
-            #     self.winner = self.players[id].name
-            #     if id == 0:
-            #         self.winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
-            #     else:
-            #         self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
-
-            #     await self.gameconsumer.send_playerUpdate()
-            #     await asyncio.sleep(0.005)
-            #     await self.gameconsumer.close()
-            #     break
-        ################################################################################
-
+        while self.game_time:
+            if not self.gameconsumer.is_open:
+                break
+                
             try:
-                # if self.game_time > 0:
-                #     self.game_time = math.floor(99 - time.time() + start_time)
-                # if self.game_time == 0:
-                #     if not self.players[0].tagger:
-                #         self.winner = self.players[0].name
-                #         self.winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
-                #     else:
-                #         self.winner = self.players[1].name
-                #         self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
+                if self.game_time > 0:
+                    self.game_time = math.floor(99 - time.time() + start_time)
+                if self.game_time == 0:
+                    if not self.players[0].tagger:
+                        self.winner = self.players[0].name
+                        self.winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
+                    else:
+                        self.winner = self.players[1].name
+                        self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
+
                 collision = None
                 for self.player in self.players:
                     self.player.fall(self)
@@ -122,7 +106,7 @@ class gameMonitor:
 
             except Exception as e:
                 print(f"Error game loop: {e}")
-                # self.gameconsumer.is_open = False
+                self.gameconsumer.is_open = False
                 break
 
     def checkCollision(self, id):
@@ -194,37 +178,6 @@ class Player:
             'upReleas': True,
         }
 
-    def updatePlayer(self, canvas_height, canvas_width, initW, initH):
-
-        self.height = self.dimensionPercenatge * canvas_height / 100
-        self.width = self.height
-
-        # vitesse of the movement
-        self.vitesse['left'] = canvas_width * -2 / 1697
-        self.vitesse['right'] = canvas_width * 2 / 1697
-        self.vitesse['up'] = canvas_height * -7 / 955
-
-        self.vitesse['right'] = 1 if self.vitesse['right'] == 0 else self.vitesse['right']
-        self.vitesse['left'] = -1 if self.vitesse['left'] == 0 else self.vitesse['left']
-        self.vitesse['up'] = 1 if self.vitesse['up'] == 0 else self.vitesse['up']
-
-        # player position
-        if initW:
-
-            self.position['pX'] = self.position['x'] * 100 / initW
-            self.position['pY'] = self.position['y'] * 100 / initH
-            
-            self.position['x'] = self.position['pX'] * canvas_width / 100
-            self.position['y'] = self.position['pY'] * canvas_height / 100
-
-        else:
-            if self.id == 0:
-                self.position['x'] = canvas_width/4
-            else:
-                self.position['x'] = 3*canvas_width/4
-
-        self.gravity = canvas_height * 0.1 / 955
-
     def fall(self, game_monitor):
 
         if (self.position['y'] < 0): #top of the cavas
@@ -291,39 +244,3 @@ class Player:
             or (self.position['y'] < platform.position['y'] and self.position['y'] + self.height > platform.position['y'] + platform.height)):
                 return 1
         return 0
-           
-async def resizeWindow(text_data_json, self_cons, game_monitor):
-
-    window_innerHeight = text_data_json.get('window_innerHeight')
-    window_innerWidth = text_data_json.get('window_innerWidth')
-
-    if window_innerHeight < 10:
-        return
-    init = game_monitor.canvas_width
-    test = game_monitor.canvas_height
-    game_monitor.canvas_height = window_innerHeight - 6
-
-    Width = (16 * game_monitor.canvas_height) / 9
-    if (Width < window_innerWidth - 6):
-        game_monitor.canvas_width = Width
-    else:
-        game_monitor.canvas_width = window_innerWidth - 6
-        game_monitor.canvas_height = (9 * (game_monitor.canvas_width - 6)) / 16
-
-    for player in game_monitor.players:
-        player.updatePlayer(game_monitor.canvas_height, game_monitor.canvas_width, init, test)
-
-    
-
-    for platform in game_monitor.platforms:
-        platform.width = platform.dimensionPercentageX * game_monitor.canvas_width / 100
-        platform.height = platform.dimensionPercentageY * game_monitor.canvas_height / 100
-        platform.position['x'] = platform.pX * game_monitor.canvas_width / 100
-        platform.position['y'] = platform.pY * game_monitor.canvas_height / 100
-
-    game_monitor.platform_widths = [platform.width for platform in game_monitor.platforms]
-    game_monitor.platform_heights = [platform.height for platform in game_monitor.platforms]
-    game_monitor.platform_xs = [platform.position['x'] for platform in game_monitor.platforms]
-    game_monitor.platform_ys = [platform.position['y'] for platform in game_monitor.platforms]
-    
-    await self_cons.send_gameUpdate()

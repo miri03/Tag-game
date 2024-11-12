@@ -165,25 +165,26 @@ async function start_game()
     canvas.width = 0;
     if (socket.readyState === WebSocket.OPEN)
     {
-        let p1_name 
-        let p2_name
-        // const username = await fetchUserName()
-        const username = "test_change"
+        // let p1_name 
+        // let p2_name
+        // // const username = await fetchUserName()
+        // const username = "test_change"
 
-        if (players[0].name === username)
-        {
-            p1_name = username 
-            p2_name = players[1].name 
-        }
-        else
-        {
-            p1_name = username
-            p2_name = players[0].name 
-        }
+        // if (players[0].name === username)
+        // {
+        //     p1_name = username 
+        //     p2_name = players[1].name 
+        // }
+        // else
+        // {
+        //     p1_name = username
+        //     p2_name = players[0].name 
+        // }
+        console.log(players[0].name, players[1].name)
         socket.send(JSON.stringify({
             'action': 'players name',
-            'p1': p1_name,
-            'p2': p2_name,
+            'p1': players[0].name,
+            'p2': players[1].name,
         }))
     }
 
@@ -261,11 +262,11 @@ async function start_game()
         rain();
         if (!winner)
             draw_timer(time, players)
-        // if (time === 0 && socket.readyState === WebSocket.OPEN)
-        // {
-        //     socket.close()
-        //     time = 1
-        // }
+        if (time === 0 && socket.readyState === WebSocket.OPEN)
+        {
+            socket.close()
+            time = 1
+        }
     }
 
     function load_draw(image, x, y, width, height)
@@ -322,6 +323,16 @@ async function start_game()
             winner = socket_data.winner
             winner_color = socket_data.winner_color
         }
+        if (socket_data.action === "winner")
+        {
+            console.log("hereeee")
+            winner = socket_data.winner
+            winner_color = socket_data.winner_color
+            socket.close()
+        }
+
+        if (winner)
+            console.log("winner is=>", winner)
 
         if (socket_data.action === "update key")
         {
@@ -469,7 +480,7 @@ async function start_game()
         stop_animation = true
         reload_data()
         document.getElementById('overlay').style.visibility = 'hidden'
-        window.location.hash = '#/ta'
+        // window.location.hash = '#/ta'
     }
 
     let button = document.querySelector('.overlay-button')
@@ -497,7 +508,9 @@ async function start_game()
 
     async function disconnect()
     {
-        if (winner && window.location.hash === "#/remoteTag")
+        console.log("disconnect, winner", winner)
+        // if (winner && window.location.hash === "#/remoteTag")
+        if (winner)
         {
             document.getElementById('overlay').style.visibility = 'visible';
             document.getElementById('overlay').style.textShadow = winner_color
@@ -505,8 +518,8 @@ async function start_game()
             const overlay = document.querySelector('.overlay-text')
             overlay.textContent = winner + ' wins'    
         }
-        if (winner)
-            await game_score(winner)
+        // if (winner)
+        //     await game_score(winner)
         // winner = null
         // setTagGameInfo(null)
         reload_data()
