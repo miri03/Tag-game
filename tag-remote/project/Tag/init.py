@@ -101,6 +101,10 @@ class gameMonitor:
                     self.GO = False
 
                 groupName, consumers = await self.gameconsumer.groupName()
+                if groupName == None or consumers == None:
+                    self.gameconsumer.is_open = False
+                    break
+                
                 await self.gameconsumer.channel_layer.group_send(groupName, {"type": "send_playerUpdate"})
                 await asyncio.sleep(0.005)
 

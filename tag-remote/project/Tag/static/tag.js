@@ -11,7 +11,6 @@ const tag_game_info = {
 async function start_game()
 {
 
-    
     class Platform{
         constructor({x, y, w})
         {
@@ -480,7 +479,7 @@ async function start_game()
         stop_animation = true
         reload_data()
         document.getElementById('overlay').style.visibility = 'hidden'
-        // window.location.hash = '#/ta'
+        window.location.href = '/'
     }
 
     let button = document.querySelector('.overlay-button')

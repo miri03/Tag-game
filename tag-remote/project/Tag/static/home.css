@@ -1,0 +1,21 @@
+
+@font-face {
+    font-family: 'Volax';
+    src: url('/static/assets/Valorax-lg25V.otf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.text {
+    font-family: 'Volax';
+}

@@ -27,42 +27,44 @@ class MyConsumer(AsyncWebsocketConsumer):
 			group_name = str(uuid.uuid4()) ###this
 			await self.channel_layer.group_add(group_name, self.firstConsumer.channel_name)
 			await self.channel_layer.group_add(group_name, self.secondConsumer.channel_name)
-			await self.channel_layer.group_send(group_name, {"type": "send_start", "message": "start game"})
+			await self.channel_layer.group_send(group_name, {"type": "sendStart", "message": "start game"})
 			games[group_name] = gameMonitor(self)
 			asyncio.create_task(games[group_name].gameLoop())
 
-	async def send_start(self, event):
-		if self.is_open == False:
-			return
-		message = event["message"]
-		await self.send(text_data=json.dumps({
-			"content": message
-		}))
+	async def sendStart(self, event):
+		try:
+			message = event["message"]
+			await self.send(text_data=json.dumps({
+				"content": message
+			}))
+		except Exception as e:
+			print(f"Error sendStart: {e}")
 
 	async def groupName(self):
 		for group, channel in self.channel_layer.groups.items():
-			consumers = list(map(lambda item: item, channel))
-			for consumer, date in channel.items():
-				if consumer == self.channel_name:
-					return group, consumers
+			consumers = list(channel.keys())
+			if self.channel_name in consumers:
+				return group, consumers
 		return None, None
 
 	async def receive(self, text_data):
 		text_data_json = json.loads(text_data)
 		action = text_data_json.get('action')
-		group_name, consumers = await self.groupName()
 
-    #     ###########################################################################################
+		group_name, consumers = await self.groupName()
+		if group_name == None or consumers == None:
+			return
+
+    ############################################################################################
 		if action == "players name":
 			games[group_name].players[0].name = text_data_json.get("p1")
 			games[group_name].players[1].name = text_data_json.get("p2")
 
-    #     ###########################################################################################
-
+    ############################################################################################
 		if action == "init players position":
 			games[group_name].players[0].position['x'] = text_data_json.get('player0_x')
 			games[group_name].players[1].position['x'] = text_data_json.get('player1_x')
-    #     ###########################################################################################
+    ############################################################################################
 
 		if action == "key update":
 			if consumers[0] == self.channel_name:
@@ -80,12 +82,13 @@ class MyConsumer(AsyncWebsocketConsumer):
 				if games[group_name].players[1].key['upReleas'] == False and games[group_name].players[1].key['upPressed'] == False:
 					games[group_name].players[1].velocity['y'] = games[group_name].players[1].vitesse['up']
 					games[group_name].players[1].key['upPressed'] = True
-    #     ###########################################################################################
+    ############################################################################################
 
 	async def send_playerUpdate(self, event):
-		if self.is_open == False:
-			return
 		group_name, consumers = await self.groupName()
+		if group_name == None or consumers == None:
+			return
+
 		try:
 			await self.send(text_data=json.dumps({
 				'action': 'update player',
@@ -122,20 +125,16 @@ class MyConsumer(AsyncWebsocketConsumer):
 
 	async def sendWinner(self, event):
 		group_name, consumers = await self.groupName()
+		if group_name == None or consumers == None:
+			return
+
 		await self.send(text_data=json.dumps({
 			'action': 'winner',
 			'winner': games[group_name].winner,
 			'winner_color': games[group_name].winner_color
 		}))
 
-	async def disconnect(self, code):
-		self.is_open = False
-		group_name, consumers = await self.groupName()
-
-		await self.channel_layer.group_discard(
-			group_name,
-			self.channel_name
-		)
+	async def quitGame(self, group_name, consumers):
 		if not games[group_name].winner:
 			if self.channel_name == consumers[0]:
 				games[group_name].winner = games[group_name].players[1].name
@@ -146,3 +145,23 @@ class MyConsumer(AsyncWebsocketConsumer):
 			
 			await self.channel_layer.group_send(group_name, {"type": "sendWinner"})
 			await asyncio.sleep(0.005)
+
+	async def disconnect(self, code):
+		self.is_open = False
+		if quitLobby():
+			return
+
+		group_name, consumers = await self.groupName()
+		if group_name == None or consumers == None:
+			return
+
+		await self.channel_layer.group_discard(
+			group_name,
+			self.channel_name
+		)
+		await self.quitGame(group_name, consumers)
+
+def quitLobby():
+	if len(players_c) > 0:
+		players_c.pop(0)
+		return 1

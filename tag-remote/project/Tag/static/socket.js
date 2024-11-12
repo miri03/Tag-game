@@ -36,11 +36,7 @@ let socket = await(initializeApp());
 socket.addEventListener('message', function(event) {
     let socket_data = JSON.parse(event.data)
     if (socket.readyState === WebSocket.OPEN && socket_data.content === "start game")
-    {
-        console.log("here")
-        // connect_game();
         start_game();
-    }
 })
 
 export {socket}
