@@ -19,3 +19,9 @@
 .text {
     font-family: 'Volax';
 }
+
+@layer utilities {
+    .text-dynamic {
+        font-size: calc(1vw + 1vh + 0.5em);
+    }
+}
