@@ -31,7 +31,11 @@
     font-family: 'SourGummy';
 }
 
-.spinner {
+.custom-placeholder::placeholder {
+    color: rgba(243, 25, 69, 0.8)    
+}
+
+#spinner {
     display: none;
     background-image: linear-gradient(rgb(186, 66, 255) 35%,rgb(0, 225, 255));
     width: 70px;
