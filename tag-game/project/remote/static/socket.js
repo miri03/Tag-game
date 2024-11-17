@@ -7,7 +7,10 @@ let cancelButton = document.querySelector('.cancel-button')
 if (socket.readyState === WebSocket.OPEN)
 {
     if (localStorage.getItem('username') === null)
+    {
         window.location.href = '/'
+        socket.close()
+    }
     socket.send(JSON.stringify({
         'action': 'players name',
         'name' : localStorage.getItem('username')

@@ -30,7 +30,7 @@ DEBUG = True
 
 host = os.getenv('HOST')
 
-ALLOWED_HOSTS = [host, '127.0.0.1', 'localhost', 'tag-remote', '0.0.0.0']
+ALLOWED_HOSTS = [host, '127.0.0.1', 'localhost', 'tag-game', '0.0.0.0']
 
 
 # Application definition
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'Tag',
+    'remote',
 ]
 
 ASGI_APPLICATION = 'project.asgi.application'
@@ -71,7 +71,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['./tag-remote/project/Tag/templates'],
+        'DIRS': ['./tag-game/project/remote/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -135,7 +135,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    './tag-remote/project/Tag/static',  # Absolute path to your static folder
+    './tag-game/project/remote/static',  # Absolute path to your static folder
 ]
 
 

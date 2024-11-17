@@ -1,4 +1,4 @@
-python tag-remote/project/manage.py makemigrations
-python tag-remote/project/manage.py migrate
+python tag-game/project/manage.py makemigrations
+python tag-game/project/manage.py migrate
 
-python tag-remote/project/manage.py runserver 0.0.0.0:8007
+python tag-game/project/manage.py runserver 0.0.0.0:8007
