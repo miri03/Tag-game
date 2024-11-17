@@ -46,6 +46,17 @@ class gameMonitor:
 
     async def gameLoop(self):
 
+        await asyncio.sleep(1)
+        try:
+            groupName, consumers = await self.gameconsumer.groupName()
+
+            await self.gameconsumer.channel_layer.group_send(groupName, {"type": "sendStart", "message": "start game"})
+            await self.gameconsumer.channel_layer.group_send(groupName, {"type": "playersName"})
+            await asyncio.sleep(0.005)
+
+        except Exception as e:
+            print(f"Error sendind names: {e}")
+
         start_time = time.time()
         await asyncio.sleep(0.005)
 

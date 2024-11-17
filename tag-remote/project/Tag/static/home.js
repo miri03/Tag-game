@@ -6,7 +6,7 @@ button.addEventListener('click', (event)=>{
     if (username)
     {
         console.log("username =>", username)
-        // localStorage.setItem('usernname', username)
+        localStorage.setItem('username', username)
         window.location.href = "tag.html"
     }
     else

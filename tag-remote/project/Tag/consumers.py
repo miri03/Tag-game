@@ -14,6 +14,7 @@ class MyConsumer(AsyncWebsocketConsumer):
 		self.groups = []
 
 	async def connect(self):
+		self.players_name = None
 		self.channel_layer = get_channel_layer()
 		await self.accept()
 		players_c.append(self)
@@ -27,9 +28,16 @@ class MyConsumer(AsyncWebsocketConsumer):
 			group_name = str(uuid.uuid4()) ###this
 			await self.channel_layer.group_add(group_name, self.firstConsumer.channel_name)
 			await self.channel_layer.group_add(group_name, self.secondConsumer.channel_name)
-			await self.channel_layer.group_send(group_name, {"type": "sendStart", "message": "start game"})
+			# await self.channel_layer.group_send(group_name, {"type": "sendStart", "message": "start game"})
 			games[group_name] = gameMonitor(self)
 			asyncio.create_task(games[group_name].gameLoop())
+
+	async def addNames(self):
+		group_name, consumers = await self.groupName()
+		if group_name == None or consumers == None:
+			return
+		games[group_name].players[0].name = self.firstConsumer.players_name
+		games[group_name].players[1].name = self.secondConsumer.players_name
 
 	async def sendStart(self, event):
 		try:
@@ -39,6 +47,16 @@ class MyConsumer(AsyncWebsocketConsumer):
 			}))
 		except Exception as e:
 			print(f"Error sendStart: {e}")
+
+	async def playersName(self, event):
+		group_name, consumers = await self.groupName()
+		if group_name == None or consumers == None:
+			return
+		await self.send(text_data=json.dumps({
+			'action': 'players_name',
+			'p1': games[group_name].players[0].name,
+			'p2': games[group_name].players[1].name
+		}))
 
 	async def groupName(self):
 		for group, channel in self.channel_layer.groups.items():
@@ -51,14 +69,13 @@ class MyConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		action = text_data_json.get('action')
 
+		if action == "players name":
+			self.players_name = text_data_json.get('name')
+			await self.addNames()
+
 		group_name, consumers = await self.groupName()
 		if group_name == None or consumers == None:
 			return
-
-    ############################################################################################
-		if action == "players name":
-			games[group_name].players[0].name = text_data_json.get("p1")
-			games[group_name].players[1].name = text_data_json.get("p2")
 
     ############################################################################################
 		if action == "init players position":

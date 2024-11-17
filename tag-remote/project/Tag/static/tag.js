@@ -1,16 +1,8 @@
 import { socket } from './socket.js'
 import {imageR1, imageL1, imageIR1, imageIL1, imageR2, imageL2, imageIR2, imageIL2, arrow, go_arrow, numbers, background, platform} from './image_src.js';
 
-const host = "127.0.0.1"
-
-const tag_game_info = {
-    player1name: "miri",
-    player2name: "halima",
-}
-
 async function start_game()
 {
-
     class Platform{
         constructor({x, y, w})
         {
@@ -93,12 +85,12 @@ async function start_game()
         
         c.direction = "ltr";
         c.textBaseline = 'top';
-        c.fillText(tag_game_info.player1name, canvas.width/10, player[0].height)
+        c.fillText(player[0].name, canvas.width/10, player[0].height)
 
 
         c.fillStyle = 'rgba(32, 174, 221, 0.8)'
         c.direction = "rtl"
-        c.fillText(tag_game_info.player2name, canvas.width - canvas.width/10, player[1].height)
+        c.fillText(player[1].name, canvas.width - canvas.width/10, player[1].height)
 
     }
 
@@ -154,7 +146,7 @@ async function start_game()
         new Platform({x:1500, y:935, w:377}),
     ]
 
-    const players = [new Player({imgR:imageR1, imgL:imageL1, imgIR:imageIR1, imgIL:imageIL1, ply_name:tag_game_info.player1name}), new Player({imgR:imageR2, imgL:imageL2, imgIR:imageIR2, imgIL:imageIL2, ply_name:tag_game_info.player2name})]
+    const players = [new Player({imgR:imageR1, imgL:imageL1, imgIR:imageIR1, imgIL:imageIL1}), new Player({imgR:imageR2, imgL:imageL2, imgIR:imageIR2, imgIL:imageIL2})]
     
     let GO = false
     let time = 1
@@ -162,31 +154,6 @@ async function start_game()
     let stop_animation = false
 
     canvas.width = 0;
-    if (socket.readyState === WebSocket.OPEN)
-    {
-        // let p1_name 
-        // let p2_name
-        // // const username = await fetchUserName()
-        // const username = "test_change"
-
-        // if (players[0].name === username)
-        // {
-        //     p1_name = username 
-        //     p2_name = players[1].name 
-        // }
-        // else
-        // {
-        //     p1_name = username
-        //     p2_name = players[0].name 
-        // }
-        console.log(players[0].name, players[1].name)
-        socket.send(JSON.stringify({
-            'action': 'players name',
-            'p1': players[0].name,
-            'p2': players[1].name,
-        }))
-    }
-
     resizeWindow()
 
     if (socket.readyState === WebSocket.OPEN)
@@ -310,6 +277,13 @@ async function start_game()
     function receive_message(event)
     {
         let socket_data = JSON.parse(event.data)
+
+        if (socket_data.action === "players_name")
+        {
+            console.log(socket_data)
+            players[0].name = socket_data.p1
+            players[1].name = socket_data.p2
+        }
 
         if (socket_data.action === "update player")
         {

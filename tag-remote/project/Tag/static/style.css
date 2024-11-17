@@ -17,14 +17,8 @@ html, body{
     background-color: #1A1C2C;
 }
 
-img{
-    width: 15vw;
-    height: 15vw;
-}
-
-.loading{
+#loading{
     font-family: 'SourGummy';
-    font-size: 3vw;
     color: #DCDCDC;
 }
 
