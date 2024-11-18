@@ -11,7 +11,8 @@ import os
 
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
-from remote import routing # Import my routing configuration
+from remote import routing as remote_websocket
+from local import routing as local_websocket
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
@@ -19,7 +20,7 @@ application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         "websocket": URLRouter(
-                routing.websocket_urlpatterns
+                remote_websocket.websocket_urlpatterns + local_websocket.websocket_urlpatterns
             )
     }
 )

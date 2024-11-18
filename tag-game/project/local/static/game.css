@@ -1,0 +1,22 @@
+
+@font-face {
+    font-family: 'Volax';
+    src: url('./assets/Valorax-lg25V.otf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+html, body{
+    background-color: #1A1C2C;
+}
+
+#overlay{
+    font-size: 5vw;
+    font-family: 'Volax';
+}
+
+.button{
+    color: #DCDCDC;
+    background-color: #555;
+    font-size: 3vw;
+}

@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from remote import views as remote_views
+from local import views as local_views 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('remote.urls')),
-    path('tag.html', include('remote.urls'))
+    path('', remote_views.home, name='home'),
+    path('tag.html', remote_views.game, name='tag'),
+    path('game.html', local_views.game, name='game')
 ]
