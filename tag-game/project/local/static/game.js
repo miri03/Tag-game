@@ -1,6 +1,8 @@
 import {start_game} from './localTag.js';
 
 let socket;
+let fPlayer, sPlayer
+
 
 function connectWebSocket(url) {
     return new Promise((resolve, reject) => {
@@ -35,8 +37,16 @@ async function initializeApp()
 socket = await initializeApp();
 if (socket.readyState === WebSocket.OPEN)
 {
-    console.log('##########################################################')
+    fPlayer = localStorage.getItem('first player') 
+    sPlayer = localStorage.getItem('second player') 
+    if (fPlayer === null || sPlayer === null)
+    {
+        socket.close()
+        window.location.href = '/'
+    }
+    localStorage.removeItem('first player')
+    localStorage.removeItem('second player')
     start_game();
 }
 
-export{socket}
+export{socket, fPlayer,  sPlayer}

@@ -7,6 +7,7 @@ buttonRemote.addEventListener('click', (event)=>{
     if (username)
     {
         console.log("username =>", username)
+        localStorage.removeItem('username')
         localStorage.setItem('username', username)
         window.location.href = "tag.html"
     }
@@ -25,6 +26,9 @@ buttonLocal.addEventListener('click', (event)=>{
 
     if (firstP && secondP)
     {
+        localStorage.removeItem('first player')
+        localStorage.removeItem('second player')
+
         localStorage.setItem('first player', firstP)
         localStorage.setItem('second player', secondP)
         window.location.href = "game.html"

@@ -1,11 +1,6 @@
 
-import { socket } from './game.js'
+import { socket, fPlayer, sPlayer } from './game.js'
 import {imageR1, imageL1, imageIR1, imageIL1, imageR2, imageL2, imageIR2, imageIL2, arrow, go_arrow, numbers, background, platform} from './image_src.js'
-
-let tag_game_info={
-    player1_name: 'miri',
-    player2_name: 'halima',
-}
 
 function start_game()
 {
@@ -79,12 +74,12 @@ function start_game()
         
         c.direction = "ltr";
         c.textBaseline = 'top';
-        c.fillText(tag_game_info.player1_name, canvas.width/10, player.height)
+        c.fillText(fPlayer, canvas.width/10, player.height)
 
 
         c.fillStyle = 'rgba(32, 174, 221, 0.8)'
         c.direction = "rtl"
-        c.fillText(tag_game_info.player2_name, canvas.width - canvas.width/10, player.height)
+        c.fillText(sPlayer, canvas.width - canvas.width/10, player.height)
 
     }
     
@@ -121,7 +116,7 @@ function start_game()
     const canvas = document.getElementById('canva')
     const c = canvas.getContext("2d")
     const platforms = Array.from({ length: 15 }, () => new Platform())
-    const players = [new Player({imgR:imageR1, imgL:imageL1, imgIR:imageIR1, imgIL:imageIL1, ply_name:tag_game_info.player1_name}), new Player({imgR:imageR2, imgL:imageL2, imgIR:imageIR2, imgIL:imageIL2, ply_name:tag_game_info.player2_name})]
+    const players = [new Player({imgR:imageR1, imgL:imageL1, imgIR:imageIR1, imgIL:imageIL1, fPlayer}), new Player({imgR:imageR2, imgL:imageL2, imgIR:imageIR2, imgIL:imageIL2, sPlayer})]
     let GO = false
     let time = 1
     let winner

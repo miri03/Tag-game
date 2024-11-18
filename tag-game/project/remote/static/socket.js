@@ -8,8 +8,8 @@ if (socket.readyState === WebSocket.OPEN)
 {
     if (localStorage.getItem('username') === null)
     {
-        window.location.href = '/'
         socket.close()
+        window.location.href = '/'
     }
     socket.send(JSON.stringify({
         'action': 'players name',
