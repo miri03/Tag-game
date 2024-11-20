@@ -7,7 +7,6 @@ from . import init
 class MyConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        print("HEREEE ME")
         self.monitor = init.gameMonitor(self)
         self.is_open = True
 

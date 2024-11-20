@@ -481,8 +481,6 @@ async function start_game()
 
     async function disconnect()
     {
-        console.log("disconnect, winner", winner)
-        // if (winner && window.location.hash === "#/remoteTag")
         if (winner)
         {
             document.getElementById('overlay').style.visibility = 'visible';
@@ -491,10 +489,6 @@ async function start_game()
             const overlay = document.querySelector('.overlay-text')
             overlay.textContent = winner + ' wins'    
         }
-        // if (winner)
-        //     await game_score(winner)
-        // winner = null
-        // setTagGameInfo(null)
         reload_data()
     }
 

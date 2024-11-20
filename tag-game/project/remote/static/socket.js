@@ -1,16 +1,19 @@
 
 import {start_game} from './tag.js'
 
+if (localStorage.getItem('username') === null)
+{
+    window.location.href = '/'
+    exit()
+}
+
+console.log((!localStorage.getItem('username')))
+
 let socket = await(initializeApp());
 let cancelButton = document.querySelector('.cancel-button')
 
 if (socket.readyState === WebSocket.OPEN)
 {
-    if (localStorage.getItem('username') === null)
-    {
-        socket.close()
-        window.location.href = '/'
-    }
     socket.send(JSON.stringify({
         'action': 'players name',
         'name' : localStorage.getItem('username')

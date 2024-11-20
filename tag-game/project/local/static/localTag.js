@@ -116,7 +116,7 @@ function start_game()
     const canvas = document.getElementById('canva')
     const c = canvas.getContext("2d")
     const platforms = Array.from({ length: 15 }, () => new Platform())
-    const players = [new Player({imgR:imageR1, imgL:imageL1, imgIR:imageIR1, imgIL:imageIL1, fPlayer}), new Player({imgR:imageR2, imgL:imageL2, imgIR:imageIR2, imgIL:imageIL2, sPlayer})]
+    const players = [new Player({imgR:imageR1, imgL:imageL1, imgIR:imageIR1, imgIL:imageIL1, ply_name:fPlayer}), new Player({imgR:imageR2, imgL:imageL2, imgIR:imageIR2, imgIL:imageIL2, ply_name:sPlayer})]
     let GO = false
     let time = 1
     let winner
@@ -484,8 +484,6 @@ function start_game()
             const overlay = document.querySelector('.overlay-text')
             overlay.textContent = winner + ' wins'
 
-            if (winner === null)
-                winner = "unknown"
             reload_data()
         }
     }

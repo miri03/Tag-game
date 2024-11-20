@@ -25,10 +25,9 @@ class MyConsumer(AsyncWebsocketConsumer):
 		if len(players_c) == 2:
 			self.firstConsumer = players_c.pop(0)
 			self.secondConsumer = players_c.pop(0)
-			group_name = str(uuid.uuid4()) ###this
+			group_name = str(uuid.uuid4())
 			await self.channel_layer.group_add(group_name, self.firstConsumer.channel_name)
 			await self.channel_layer.group_add(group_name, self.secondConsumer.channel_name)
-			# await self.channel_layer.group_send(group_name, {"type": "sendStart", "message": "start game"})
 			games[group_name] = gameMonitor(self)
 			asyncio.create_task(games[group_name].gameLoop())
 
@@ -36,14 +35,14 @@ class MyConsumer(AsyncWebsocketConsumer):
 		group_name, consumers = await self.groupName()
 		if group_name == None or consumers == None:
 			return
+		# Only the second consummers will get here because the group was created
 		games[group_name].players[0].name = self.firstConsumer.players_name
 		games[group_name].players[1].name = self.secondConsumer.players_name
 
 	async def sendStart(self, event):
 		try:
-			message = event["message"]
 			await self.send(text_data=json.dumps({
-				"content": message
+				"content": 'start game'
 			}))
 		except Exception as e:
 			print(f"Error sendStart: {e}")
