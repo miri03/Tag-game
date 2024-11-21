@@ -72,7 +72,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['./tag-game/project/remote/templates', './tag-game/project/local/templates'],
+        'DIRS': ['/game/project/remote/templates', '/game/project/local/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,8 +136,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    './tag-game/project/remote/static',  # Absolute path to your static folder
-    './tag-game/project/local/static'  # Absolute path to your static folder
+    '/game/project/remote/static',  # Absolute path to your static folder
+    '/game/project/local/static'  # Absolute path to your static folder
 ]
 
 

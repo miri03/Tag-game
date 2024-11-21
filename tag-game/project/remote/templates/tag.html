@@ -25,12 +25,9 @@
         <canvas id="canva" class="block"></canvas>
         <div id="overlay" class="invisible absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center">
             <div class="overlay-text text-white"></div>
-            <button class="button overlay-button rounded-lg px-5 mt-5">Quit</button>
+            <button class="button overlay-button rounded-lg px-5 mt-5 hover:bg-gray-500 hover:text-white">Quit</button>
         </div>
     </div>
     <script type="module" src="{% static 'socket.js' %}"></script>
 </body>
 </html>
-
-
-<!-- Error sendind names: Group name must be a valid unicode string with length < 100 containing only ASCII alphanumerics, hyphens, underscores, or periods, not None -->

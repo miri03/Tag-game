@@ -1,3 +1,4 @@
+
 services:
   tag_game:
       image: tag_game
@@ -15,7 +16,7 @@ volumes:
     driver_opts:
         o: bind
         type: none
-        device: ./backend/tag-remote/project/
+        device: ./tag_game/project
 
 networks:
   my_network:

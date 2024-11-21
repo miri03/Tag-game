@@ -457,19 +457,7 @@ function start_game()
     window.addEventListener("keyup", handleKeyup)
 
     window.addEventListener("blur", handleblur)
-    window.addEventListener("hashchange", hashchange)
     socket.addEventListener("close", disconnect)
-    window.addEventListener("beforeunload", handleRelodQuit)
-
-    function handleRelodQuit()
-    {
-        if (socket.readyState === WebSocket.OPEN)
-        {
-            stop_animation = true
-            if (!winner)
-                winner = "unknown"
-        }
-    }
 
     async function disconnect()
     {
@@ -483,15 +471,8 @@ function start_game()
 
             const overlay = document.querySelector('.overlay-text')
             overlay.textContent = winner + ' wins'
-
             reload_data()
         }
-    }
-
-    function hashchange()
-    {
-        stop_animation = true
-        socket.close()
     }
 
     function reload_data()
