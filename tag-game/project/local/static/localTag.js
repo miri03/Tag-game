@@ -2,6 +2,24 @@
 import { socket, fPlayer, sPlayer } from './game.js'
 import {imageR1, imageL1, imageIR1, imageIL1, imageR2, imageL2, imageIR2, imageIL2, arrow, go_arrow, numbers, background, platform} from './image_src.js'
 
+async function add_score(winner)
+{
+    const data = {
+        'player1': fPlayer,
+        'player2': sPlayer,
+        'winner': winner
+    }
+    await fetch('http://127.0.0.1:8000/api/addScore/',
+        {
+            'method': 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            'body': JSON.stringify(data)
+        }
+    )
+}
+
 function start_game()
 {
     class Player{
@@ -439,7 +457,7 @@ function start_game()
         })
     }
 
-    function quitgame()
+    async function quitgame()
     {
         stop_animation = true
         reload_data()
@@ -461,6 +479,9 @@ function start_game()
 
     async function disconnect()
     {
+        if (!winner)
+            winner = "unknown" 
+        await add_score(winner)
         if (winner)
         {
             pause_game()
@@ -482,9 +503,7 @@ function start_game()
         window.removeEventListener("keydown", handleKeydown)
         window.removeEventListener("keyup", handleKeyup)
         window.removeEventListener("blur", handleblur)
-        window.removeEventListener("hashchange", hashchange)
         window.removeEventListener("close", disconnect)
-        window.removeEventListener("beforeunload", handleRelodQuit)
         clearInterval(blinK)
     }
 }

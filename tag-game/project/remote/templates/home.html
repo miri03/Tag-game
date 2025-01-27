@@ -15,21 +15,29 @@
         <source src="/static/assets/cityScape.mp4" type="video/mp4">
     </video>
     
-    <div class="lg:grid lg:grid-cols-3 lg:space-y-0 space-y-6">
-
-        <!-- Box 1 -->
-        <div class="bg-black bg-opacity-30 rounded-lg py-4">
-            <h1 class="text mx-16 text-center text-xl text-white">Remote</h1>
-            <input placeholder="Username" class="text-center input my-6 mx-16 rounded block" id="Username">
-            <button class="mx-20 bg-black rounded-lg px-5 py-3 text text-white" id="Remote">Join Game</button>
+    <div class="grid-rows-2">
+        <div class="lg:grid lg:grid-cols-3 lg:space-y-0 space-y-6 mt-16">
+            <!-- Box 1 -->
+            <div class="bg-black bg-opacity-30 rounded-lg py-4 flex justify-between items-center flex-col">
+                <h1 class="text mx-16 text-center text-xl text-white">Remote</h1>
+                <input placeholder="Username" class="text-center input my-6 mx-16 rounded block" id="Username">
+                <button class="mx-20 bg-black rounded-lg px-5 py-3 text text-white" id="Remote">Join Game</button>
+            </div>
+            <div></div>
+            <!-- Box 2 -->
+            <div class="bg-black bg-opacity-30 rounded-lg py-4 flex justify-between items-center flex-col">
+                <h1 class="text mx-16 text-center text-xl text-white">Local</h1>
+                <input placeholder="First Player" class="text-center input my-6 mx-16 rounded block" id="First Player">
+                <input placeholder="Second Player" class="text-center input my-6 mx-16 rounded block" id="Second Player">
+                <button class="mx-20 bg-black rounded-lg px-5 py-3 text text-white" id="Local">Join Game</button>
+            </div>
         </div>
-        <div></div>
-        <!-- Box 2 -->
-        <div class="bg-black bg-opacity-30 rounded-lg py-4">
-            <h1 class="text mx-16 text-center text-xl text-white">Local</h1>
-            <input placeholder="First Player" class="text-center input my-6 mx-16 rounded block" id="First Player">
-            <input placeholder="Second Player" class="text-center input my-6 mx-16 rounded block" id="Second Player">
-            <button class="mx-20 bg-black rounded-lg px-5 py-3 text text-white" id="Local">Join Game</button>
+        <div class="lg:grid lg:grid-cols-3 lg:space-y-0 space-y-6 mt-16">
+            <div></div>
+            <div>
+                <button class="mx-20 bg-black rounded-lg px-5 py-3 text text-white" id="history">Game History</button>
+            </div>
+            <div></div>
         </div>
     </div>
     <script type="module" src="{% static 'home.js' %}"></script>

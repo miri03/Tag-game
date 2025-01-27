@@ -1,6 +1,7 @@
 
 let buttonRemote = document.getElementById('Remote')
 let buttonLocal = document.getElementById('Local')
+let buttonHistory = document.getElementById('history')
 
 buttonRemote.addEventListener('click', (event)=>{
     let username = document.getElementById('Username').value.trim()
@@ -46,4 +47,8 @@ buttonLocal.addEventListener('click', (event)=>{
         document.getElementById('Second Player').classList.add('custom-placeholder');
         event.preventDefault()
     }
+})
+
+buttonHistory.addEventListener('click', (event)=>{
+    
 })

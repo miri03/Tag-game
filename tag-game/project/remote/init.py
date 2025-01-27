@@ -2,6 +2,7 @@
 import asyncio
 import time
 import math
+import requests
 
 class gameMonitor:
     def __init__(self, consumer):
@@ -68,7 +69,7 @@ class gameMonitor:
                 
             try:
                 if self.game_time > 0:
-                    self.game_time = math.floor(99 - time.time() + start_time)
+                    self.game_time = math.floor(9 - time.time() + start_time)
                 if self.game_time == 0:
                     if not self.players[0].tagger:
                         self.winner = self.players[0].name
@@ -76,6 +77,12 @@ class gameMonitor:
                     else:
                         self.winner = self.players[1].name
                         self.winner_color = "2px 0px 8px rgba(32, 174, 221, 0.8)"
+                    myobj = {
+                        'player1': self.players[0].name,
+                        'player2': self.players[1].name,
+                        'winner' : self.winner
+                    }
+                    requests.post('http://tagDb:8000/api/addScore/', json = myobj)
 
                 collision = None
                 for self.player in self.players:

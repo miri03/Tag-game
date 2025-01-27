@@ -3,6 +3,7 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 import uuid
+import requests
 
 from .init import gameMonitor, Player
 
@@ -158,11 +159,17 @@ class MyConsumer(AsyncWebsocketConsumer):
 			elif self.channel_name == consumers[1]:
 				games[group_name].winner = games[group_name].players[0].name
 				games[group_name].winner_color = "2px 0px 8px rgba(207, 62, 90, 0.8)"
-			
+			myobj = {
+				'player1': games[group_name].players[0].name,
+				'player2': games[group_name].players[1].name,
+				'winner' : games[group_name].winner
+			}
+			requests.post('http://tagDb:8000/api/addScore/', json = myobj)
 			await self.channel_layer.group_send(group_name, {"type": "sendWinner"})
 			await asyncio.sleep(0.005)
 
 	async def disconnect(self, code):
+		
 		self.is_open = False
 		if quitLobby():
 			return
@@ -170,12 +177,13 @@ class MyConsumer(AsyncWebsocketConsumer):
 		group_name, consumers = await self.groupName()
 		if group_name == None or consumers == None:
 			return
-
+		
 		await self.channel_layer.group_discard(
 			group_name,
 			self.channel_name
 		)
 		await self.quitGame(group_name, consumers)
+		
 
 def quitLobby():
 	if len(players_c) > 0:
