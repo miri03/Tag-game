@@ -21,16 +21,21 @@ def add_Score(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# @api_view(['DELETE'])
+# def delete_history(request):
+#     try:
+#         id = request.data.get('id')
+#         if not id:
+#             return Response({'body':"id required"},status=status.HTTP_400_BAD_REQUEST)
+#         id = int(request.data.get('id'))
+#         matchHistory.objects.get(id=id).delete()
+#     except matchHistory.DoesNotExist :
+#         return Response({'body': f'match with {id = } not found'},status=status.HTTP_404_NOT_FOUND)
+#     return Response(status=status.HTTP_204_NO_CONTENT)
+
 @api_view(['DELETE'])
 def delete_history(request):
-    try:
-        id = request.data.get('id')
-        if not id:
-            return Response({'body':"id required"},status=status.HTTP_400_BAD_REQUEST)
-        id = int(request.data.get('id'))
-        matchHistory.objects.get(id=id).delete()
-    except matchHistory.DoesNotExist :
-        return Response({'body': f'match with {id = } not found'},status=status.HTTP_404_NOT_FOUND)
+    matchHistory.objects.all().delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['PUT'])

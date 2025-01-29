@@ -13,6 +13,11 @@
     font-style: italic;
 }
 
+.history{
+    width: 200px; /* Set the desired width */
+    height: 150px; /* Set the desired height */
+}
+
 .background-video {
     position: absolute;
     top: 0;
@@ -25,6 +30,11 @@
 
 .text {
     font-family: 'Volax';
+}
+
+.games {
+    font-family: 'SourGummy';
+    word-spacing: 2rem;
 }
 
 .input {
