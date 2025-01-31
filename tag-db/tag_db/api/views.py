@@ -10,7 +10,7 @@ import sys
 def get_history(request):
     history = matchHistory.objects.all()
     serializer = historySerializer(history, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def add_Score(request):
@@ -53,3 +53,14 @@ def update_winner(request):
     except matchHistory.DoesNotExist :
         return Response({'body':f'match with {id=} not found'}, status=status.HTTP_404_NOT_FOUND)
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def getUserHistory(request):
+    user = request.query_params.get('username')
+    try:
+        match = matchHistory.objects.filter(player1=user) | matchHistory.objects.filter(player2=user) 
+        serializer = historySerializer(match, many=True)
+    except matchHistory.DoesNotExist :
+        return Response({'body':f'{user=} not found'}, status=status.HTTP_404_NOT_FOUND)
+    return Response(serializer.data, status=status.HTTP_200_OK)

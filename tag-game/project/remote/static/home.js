@@ -3,6 +3,8 @@ let buttonRemote = document.getElementById('Remote')
 let buttonLocal = document.getElementById('Local')
 let buttonHistory = document.getElementById('historyButton')
 let buttonDelete = document.getElementById('delete')
+let buttonClose = document.getElementById('close')
+let getUser = document.getElementById('getUser')
 
 
 buttonRemote.addEventListener('click', (event)=>{
@@ -49,45 +51,106 @@ buttonLocal.addEventListener('click', (event)=>{
     }
 })
 
-buttonHistory.addEventListener('click', dispalyHistory)
-
-async function dispalyHistory()
-{
+buttonHistory.addEventListener('click', async ()=>{
     document.getElementById('history_list').style.visibility = 'visible'
     document.getElementById('home').style.visibility = 'hidden'
-    const ulElement = document.querySelector('#history_list ul')
-    while (ulElement.firstElementChild) {
-        ulElement.removeChild(ulElement.firstElementChild);
-    }
-
-    let response = await fetch('http://127.0.0.1:8000/api/matchHistory/')
-    const jsonData = await response.json();
     
+    let response = await fetch('http://127.0.0.1:8000/api/matchHistory/')
+    if (response.status === 200)
+    {
+        const jsonData = await response.json();
+        dispalyHistory(jsonData)
+    }
+})
+
+function dispalyHistory(jsonData)
+{   
+    const historyRow = document.querySelector('#history_list tbody')
+    console.log(historyRow)
+    while (historyRow.firstElementChild) {
+        historyRow.removeChild(historyRow.firstElementChild);
+    }
     jsonData.forEach(game => {
-        const li = document.createElement("li")
+        const tr = document.createElement("tr")
+        let td1 = document.createElement("td")
+        let tdL = document.createElement("td")
+        let tdW = document.createElement("td")
+        let td2 = document.createElement("td")
+        tr.appendChild(td1)
+        tr.appendChild(tdL)
+        tr.appendChild(tdW)
+        tr.appendChild(td2)
+
         if (game.winner === game.player1)
         {
-            li.innerHTML = `
-            <span style="color: rgb(196, 16, 76);">${game.player1}</span>
-            <span style="color: rgb(220,20,60);"> W </span>
-            <span style="color: rgb(80, 200, 120);"> L </span>
-            <span style="color: rgb(32, 174, 221);">${game.player2}</span>
-            `
-        }
-        else{
-            li.innerHTML = `
-            <span style="color: rgb(196, 16, 76);">${game.player1}</span>
-            <span style="color: rgb(220,20,60);"> L </span>
-            <span style="color: rgb(80, 200, 120);"> W </span>
-            <span style="color: rgb(32, 174, 221);">${game.player2}</span>
-            `
-        }
+            // li.innerHTML = `
+            // <span style="color: rgb(196, 16, 76);">${game.player1}</span>
+            // <span style="color: rgb(80, 200, 120);"> W </span>
+            // <span style="color: rgb(220,20,60);"> L </span>
+            // <span style="color: rgb(32, 174, 221);">${game.player2}</span>
+            // `
+            td1.innerHTML = `${game.player1}`
+            td1.style.color =  "rgb(196, 16, 76)"
 
-        ulElement.appendChild(li)
+            td2.innerHTML = `${game.player2}`
+            td2.style.color =  "rgb(32, 174, 221)"
+
+            tdL.innerHTML = 'L'
+            tdW.innerHTML = 'W'
+        }
+        // else{
+        //     li.innerHTML = `
+        //     <span style="color: rgb(196, 16, 76);">${game.player1}</span>
+        //     <span style="color: rgb(220,20,60);"> L </span>
+        //     <span style="color: rgb(80, 200, 120);"> W </span>
+        //     <span style="color: rgb(32, 174, 221);">${game.player2}</span>
+        //     `
+        // }
+
+        // ulElement.appendChild(li)
+        historyRow.appendChild(tr)
     });
 }
 
 buttonDelete.addEventListener("click", async()=>{
     await fetch("http://127.0.0.1:8000/api/delete_history/", {'method':'DELETE'})
-    dispalyHistory()
+    let response = await fetch('http://127.0.0.1:8000/api/matchHistory/')
+    if (response.status === 200)
+    {
+        const jsonData = await response.json();
+        dispalyHistory(jsonData)
+    }
+})
+
+buttonClose.addEventListener("click", ()=>{
+    const ulElement = document.querySelector('#history_list ul')
+    while (ulElement.firstElementChild) {
+        ulElement.removeChild(ulElement.firstElementChild);
+    }
+    document.getElementById("history_list").style.visibility = "hidden"
+    document.getElementById("home").style.visibility = "visible"
+    document.getElementById('getUser').value = ''
+})
+
+getUser.addEventListener("click", ()=>{
+    getUser.addEventListener('keypress', async(event)=>{
+        if (event.code === "Enter")
+        {
+            let username = document.getElementById('getUser').value.trim()
+            let response
+            if (!username)
+            {
+                response = await fetch('http://127.0.0.1:8000/api/matchHistory/')
+            }
+            else
+            {
+                response = await fetch(`http://127.0.0.1:8000/api/getUserHistory/?username=${encodeURIComponent(username)}`)
+            }
+            if (response.status === 200)
+            {
+                const jsonData = await response.json();
+                dispalyHistory(jsonData)
+            }
+        }
+    })
 })

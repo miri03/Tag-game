@@ -16,18 +16,28 @@
     </video>
 
     <div id="history_list" class="invisible absolute inset-0 flex justify-center items-center">
-        <div class="w-3/5 h-3/5 bg-black bg-opacity-50 rounded-lg p-5 overflow-y-auto text-white text-center lg:text-xl">
-            <div class="lg:grid lg:grid-cols-3">
-                <div></div>
-                <h1 class="text py-6">Game History</h1>
+        <div class="relative w-3/5 h-3/5 bg-black bg-opacity-50 rounded-lg p-5 overflow-y-auto text-white text-center lg:text-xl">
+            <div class="lg:grid lg:grid-cols-3 space-y-4 lg:place-items-center">
+                <input placeholder="username" class="games text-center text-black rounded-lg w-1/2 h-1/4" id="getUser">
+                <h1 class="text lg:py-8">Game History</h1>
                 <button id="delete" class="text text-red-600">DELETE</button>
+                <button id="close" class="absolute top-2 right-2 bg-black bg-opacity-70 rounded-lg px-2 games">X</button>
             </div>
-            <div class="games flex-grow">
-                <ul class="my-10 space-y-4">
-                </ul>
+            <div class="games place-items-center">
+                <table class="table-fixed">
+                    <thead>
+                      <tr>
+                        <th class="w-1/4"></th>
+                        <th class="w-1/8"></th>
+                        <th class="w-1/8"></th>
+                        <th class="w-1/4"></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
-    </div>
+    </div> 
 
     <div class="absolute grid-rows-2" id = "home">
         <div class="lg:grid lg:grid-cols-3 lg:space-y-0 space-y-6 mt-16">
