@@ -66,48 +66,39 @@ buttonHistory.addEventListener('click', async ()=>{
 function dispalyHistory(jsonData)
 {   
     const historyRow = document.querySelector('#history_list tbody')
-    console.log(historyRow)
     while (historyRow.firstElementChild) {
         historyRow.removeChild(historyRow.firstElementChild);
     }
     jsonData.forEach(game => {
         const tr = document.createElement("tr")
-        let td1 = document.createElement("td")
-        let tdL = document.createElement("td")
-        let tdW = document.createElement("td")
-        let td2 = document.createElement("td")
-        tr.appendChild(td1)
-        tr.appendChild(tdL)
-        tr.appendChild(tdW)
-        tr.appendChild(td2)
+        const tds = []
+        let i = 0 
+        while (i < 4)
+        {
+            let newElement = document.createElement("td")
+            tds[i] = newElement
+            tr.appendChild(newElement)
+            i++
+        }
+        tds[0].innerHTML = `${game.player1}`
+        tds[0].style.color =  "rgb(196, 16, 76)"
+
+        tds[3].innerHTML = `${game.player2}`
+        tds[3].style.color =  "rgb(32, 174, 221)"
 
         if (game.winner === game.player1)
         {
-            // li.innerHTML = `
-            // <span style="color: rgb(196, 16, 76);">${game.player1}</span>
-            // <span style="color: rgb(80, 200, 120);"> W </span>
-            // <span style="color: rgb(220,20,60);"> L </span>
-            // <span style="color: rgb(32, 174, 221);">${game.player2}</span>
-            // `
-            td1.innerHTML = `${game.player1}`
-            td1.style.color =  "rgb(196, 16, 76)"
-
-            td2.innerHTML = `${game.player2}`
-            td2.style.color =  "rgb(32, 174, 221)"
-
-            tdL.innerHTML = 'L'
-            tdW.innerHTML = 'W'
+            tds[1].innerHTML = 'W'
+            tds[1].style.color = "rgb(80, 200, 120)"
+            tds[2].innerHTML = 'L'
+            tds[2].style.color = "rgb(220,20,60)"
         }
-        // else{
-        //     li.innerHTML = `
-        //     <span style="color: rgb(196, 16, 76);">${game.player1}</span>
-        //     <span style="color: rgb(220,20,60);"> L </span>
-        //     <span style="color: rgb(80, 200, 120);"> W </span>
-        //     <span style="color: rgb(32, 174, 221);">${game.player2}</span>
-        //     `
-        // }
-
-        // ulElement.appendChild(li)
+        else{
+            tds[1].innerHTML = 'L'
+            tds[1].style.color = "rgb(220,20,60)"
+            tds[2].innerHTML = 'W'
+            tds[2].style.color = "rgb(80, 200, 120)"
+        }
         historyRow.appendChild(tr)
     });
 }
@@ -123,9 +114,9 @@ buttonDelete.addEventListener("click", async()=>{
 })
 
 buttonClose.addEventListener("click", ()=>{
-    const ulElement = document.querySelector('#history_list ul')
-    while (ulElement.firstElementChild) {
-        ulElement.removeChild(ulElement.firstElementChild);
+    const historyRow = document.querySelector('#history_list tbody')
+    while (historyRow.firstElementChild) {
+        historyRow.removeChild(historyRow.firstElementChild);
     }
     document.getElementById("history_list").style.visibility = "hidden"
     document.getElementById("home").style.visibility = "visible"
@@ -154,3 +145,12 @@ getUser.addEventListener("click", ()=>{
         }
     })
 })
+
+        // else{
+        //     li.innerHTML = `
+        //     <span style="color: rgb(196, 16, 76);">${game.player1}</span>
+        //     <span style="color: rgb(220,20,60);"> L </span>
+        //     <span style="color: rgb(80, 200, 120);"> W </span>
+        //     <span style="color: rgb(32, 174, 221);">${game.player2}</span>
+        //     `
+        // }
