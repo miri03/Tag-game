@@ -12,6 +12,8 @@ services:
       command: python manage.py runserver 0.0.0.0:8005
       networks:
         - my_network
+      env_file:
+        - .env
 
   tag_db:
       image: tag_db
@@ -24,6 +26,8 @@ services:
       command: python manage.py runserver 0.0.0.0:8000
       networks:
         - my_network
+      env_file:
+        - .env
 
 
 volumes:

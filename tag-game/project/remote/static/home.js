@@ -55,7 +55,7 @@ buttonHistory.addEventListener('click', async ()=>{
     document.getElementById('history_list').style.visibility = 'visible'
     document.getElementById('home').style.visibility = 'hidden'
     
-    let response = await fetch('http://127.0.0.1:8000/api/matchHistory/')
+    let response = await fetch(`http://${window.location.hostname}:8000/api/matchHistory/`)
     if (response.status === 200)
     {
         const jsonData = await response.json();
@@ -86,7 +86,12 @@ function dispalyHistory(jsonData)
         tds[3].innerHTML = `${game.player2}`
         tds[3].style.color =  "rgb(32, 174, 221)"
 
-        if (game.winner === game.player1)
+        if (game.winner === "unknown")
+        {
+            tds[1].innerHTML = '-'
+            tds[2].innerHTML = '-'
+        }
+        else if (game.winner === game.player1)
         {
             tds[1].innerHTML = 'W'
             tds[1].style.color = "rgb(80, 200, 120)"
@@ -104,8 +109,8 @@ function dispalyHistory(jsonData)
 }
 
 buttonDelete.addEventListener("click", async()=>{
-    await fetch("http://127.0.0.1:8000/api/delete_history/", {'method':'DELETE'})
-    let response = await fetch('http://127.0.0.1:8000/api/matchHistory/')
+    await fetch(`http://${window.location.hostname}:8000/api/delete_history/`, {'method':'DELETE'})
+    let response = await fetch(`http://${window.location.hostname}:8000/api/matchHistory/`)
     if (response.status === 200)
     {
         const jsonData = await response.json();
@@ -131,11 +136,11 @@ getUser.addEventListener("click", ()=>{
             let response
             if (!username)
             {
-                response = await fetch('http://127.0.0.1:8000/api/matchHistory/')
+                response = await fetch(`http://${window.location.hostname}:8000/api/matchHistory/`)
             }
             else
             {
-                response = await fetch(`http://127.0.0.1:8000/api/getUserHistory/?username=${encodeURIComponent(username)}`)
+                response = await fetch(`http://${window.location.hostname}:8000/api/getUserHistory/?username=${encodeURIComponent(username)}`)
             }
             if (response.status === 200)
             {
@@ -145,12 +150,3 @@ getUser.addEventListener("click", ()=>{
         }
     })
 })
-
-        // else{
-        //     li.innerHTML = `
-        //     <span style="color: rgb(196, 16, 76);">${game.player1}</span>
-        //     <span style="color: rgb(220,20,60);"> L </span>
-        //     <span style="color: rgb(80, 200, 120);"> W </span>
-        //     <span style="color: rgb(32, 174, 221);">${game.player2}</span>
-        //     `
-        // }

@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,8 +27,10 @@ SECRET_KEY = 'django-insecure-35j^4bsn4$8e4=^_(&6^x2_=42guqg-q@hiy0g#q)ofs^2nwn-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+host = os.getenv('HOST')
 
-ALLOWED_HOSTS = ['127.0.0.1', '10.12.12.4', 'tagDb']
+
+ALLOWED_HOSTS = [host, '127.0.0.1', '10.12.12.4', 'tagDb']
 
 
 # Application definition
@@ -54,6 +59,8 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8007/',
+    'http://10.52.80.111:8007/',
+    f'http://{host}:8007/',
     'http://tagDb:8000/'
 ]
 

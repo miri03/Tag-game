@@ -25,8 +25,9 @@ function connectWebSocket(url) {
 
 async function initializeApp()
 {
+    console.log(`${window.location.host}`)
     try{
-        const socket = await connectWebSocket(`ws://${window.location.host}/ws/tag-game/`);
+        const socket = await connectWebSocket(`ws://${window.location.hostname}:8007/ws/tag-game/`);
         return socket;
     }
     catch(error){

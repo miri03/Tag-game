@@ -43,7 +43,7 @@ function connectWebSocket(url) {
 async function initializeApp()
 {
     try{
-        const socket = await connectWebSocket(`ws://${window.location.host}/ws/remote/`);
+        const socket = await connectWebSocket(`ws://${window.location.hostname}:8007/ws/remote/`);
         return socket;
     }
     catch(error){

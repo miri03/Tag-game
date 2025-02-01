@@ -9,7 +9,7 @@ async function add_score(winner)
         'player2': sPlayer,
         'winner': winner
     }
-    await fetch('http://127.0.0.1:8000/api/addScore/',
+    await fetch(`http://${window.location.hostname}:8000/api/addScore/`,
         {
             'method': 'POST',
             headers: {
